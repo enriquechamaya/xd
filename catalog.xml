@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://app8.sacooliveros.edu.pe:8080/WebservicesSeguridad/UsuarioWebService?WSDL" uri="src/conf/xml-resources/web-service-references/UsuarioWebService/wsdl/app8.sacooliveros.edu.pe_8080/WebservicesSeguridad/UsuarioWebService.wsdl"/>
+    <system systemId="http://app8.sacooliveros.edu.pe:8080/WebservicesSeguridad/UsuarioWebService?xsd=1" uri="src/conf/xml-resources/web-service-references/UsuarioWebService/wsdl/app8.sacooliveros.edu.pe_8080/WebservicesSeguridad/UsuarioWebService.xsd_1.xsd"/>
+    <system systemId="http://app8.sacooliveros.edu.pe:8080/WebservicesSeguridad/MenuWebService?WSDL" uri="src/conf/xml-resources/web-service-references/MenuWebService/wsdl/app8.sacooliveros.edu.pe_8080/WebservicesSeguridad/MenuWebService.wsdl"/>
+    <system systemId="http://app8.sacooliveros.edu.pe:8080/WebservicesSeguridad/MenuWebService?xsd=1" uri="src/conf/xml-resources/web-service-references/MenuWebService/wsdl/app8.sacooliveros.edu.pe_8080/WebservicesSeguridad/MenuWebService.xsd_1.xsd"/>
+    <system systemId="http://app8.sacooliveros.edu.pe:8080/WebservicesSeguridad/ProyectoWebService?WSDL" uri="src/conf/xml-resources/web-service-references/ProyectoWebService/wsdl/app8.sacooliveros.edu.pe_8080/WebservicesSeguridad/ProyectoWebService.wsdl"/>
+    <system systemId="http://app8.sacooliveros.edu.pe:8080/WebservicesSeguridad/ProyectoWebService?xsd=1" uri="src/conf/xml-resources/web-service-references/ProyectoWebService/wsdl/app8.sacooliveros.edu.pe_8080/WebservicesSeguridad/ProyectoWebService.xsd_1.xsd"/>
+</catalog>

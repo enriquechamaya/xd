@@ -1,0 +1,146 @@
+* [31m395d8b0[m -[33m (HEAD -> amoreno)[m [ADD] Validacion y listado de metodos de estados y niveles de estudio [32m(84 minutes ago) [1;34m<Alonso Moreno Postigo>[m
+* [31md488dba[m -[33m[m [DELETE] Mensajes de las clases [32m(2 hours ago) [1;34m<Alonso Moreno Postigo>[m
+* [31m6a037d5[m -[33m[m [ADD] MEtodos de validacion y listado de estadoEstudioSql [32m(2 hours ago) [1;34m<Alonso Moreno Postigo>[m
+* [31me76fc37[m -[33m[m [ADD] Listado y validacion de carrera profesional [32m(6 hours ago) [1;34m<Alonso Moreno Postigo>[m
+* [31mdf967ce[m -[33m[m [EDIT] Validacion de tipo de documento Familiar [32m(7 hours ago) [1;34m<Alonso Moreno Postigo>[m
+* [31mb45fa6a[m -[33m (origin/amoreno)[m [ADD] Validacion de tipo de entrada y longitud [32m(20 hours ago) [1;34m<Alonso Moreno Postigo>[m
+* [31m480297f[m -[33m[m [ADD] Validacion de tipo de documento y numero de documento 50% [32m(20 hours ago) [1;34m<Alonso Moreno Postigo>[m
+* [31mf33be6f[m -[33m[m [ADD] Metodos de listar y validar existencia Parentesco [32m(22 hours ago) [1;34m<Alonso Moreno Postigo>[m
+*   [31mb2f6964[m -[33m (origin/develop, develop)[m [MERGE] Sesionado de token y correcion de correos; Validacion de registro de ficha [32m(23 hours ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m[33m\[m  
+[32m|[m * [31mfa246aa[m -[33m[m [ADD] Bean parentesco [32m(23 hours ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mb0bd803[m -[33m[m [ADD] formToJSONString [32m(23 hours ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31m1639854[m -[33m[m [EDIT] Validacion panel de datos personales al 85% [32m(25 hours ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31m5318b50[m -[33m[m [EDIT] Listado y validacion de ubigeo de nacimiento [32m(27 hours ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31m7fbf64d[m -[33m[m [ADD] Listado y validacion de Ubigeo - backend [32m(33 hours ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mce085f4[m -[33m[m [ADD] Metodos de listado de ubigeo y validacion [32m(2 days ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mf5bf61d[m -[33m[m [ADD] Validacion de existencia de nacionalidad [32m(2 days ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mcc23c50[m -[33m[m [ADD] Listado de nacionalidades [32m(2 days ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31ma448fcb[m -[33m[m [ADD] Listado de estados civiles [32m(2 days ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mcece623[m -[33m[m [EDIT] Validacion de formularios [32m(2 days ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mbfd5e41[m -[33m[m [EDIT] validacion de formularios TODO [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+[32m|[m * [31mb182d16[m -[33m[m [EDIT] configuraciones de ficha [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31mf759b3a[m -[33m[m [EDIT] validacion de token y limpieza de cache - completado [32m(23 hours ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m382309a[m -[33m[m [EDIT] envio de correo - CORREGIDO [32m(24 hours ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m97b90ae[m -[33m[m [EDIT] correccion de bug - envio de correo [32m(26 hours ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m0b87af2[m -[33m[m [EDIT] valdiacion de token -> completado [32m(28 hours ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m976666d[m -[33m[m [EDIT] validacion de token ficha - completado [32m(30 hours ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m9b816dd[m -[33m[m [EDIT] cambiando el orden de cerrado de conexiones (finally) [32m(32 hours ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m9fe0990[m -[33m[m [EDIT] correccion de bug - validacion de token (pendiente) [32m(2 days ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31mb7a815e[m -[33m[m [EDIT] correccion de bug token 'verificacion jsp' [32m(2 days ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m6c48c52[m -[33m[m [EDIT] validacion de token - token ficha servlet [32m(2 days ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m51eff3e[m -[33m[m [EDIT] validar token - bug reportado [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31ma6e797b[m -[33m[m [ADD] tooltip a las acciones del listado [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+[33m|[m[33m/[m  
+*   [31m47cca44[m -[33m[m [MERGE] FichaDePersonal y validacion de token(sesion) [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+[34m|[m[35m\[m  
+[34m|[m * [31m3b80e6d[m -[33m[m [EDIT] FichaDeRegistroDePersonal [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+[34m|[m * [31m497c8e2[m -[33m[m [ADD] sesion activa, redirigiendo a la pagina principal [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [35m|[m [31ma577759[m -[33m[m [EDIT] finalziacion diseño de 404 [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+* [35m|[m [31m1672c9a[m -[33m[m [EDIT] disaño de pagina 404 [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+* [35m|[m [31m3d737b9[m -[33m[m [EDIT] variables de sesion - para el registro de ficha - completado [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+* [35m|[m [31m5216310[m -[33m[m [EDIT] pase de parametro para proceder al registro de personal [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+* [35m|[m [31m714e9e1[m -[33m[m [EDIT] validacion de token completado v2 [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+[35m|[m[35m/[m  
+*   [31mdd87f8e[m -[33m[m Merge origin/amoreno into develop [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+[36m|[m[1;31m\[m  
+[36m|[m * [31mc230986[m -[33m[m [EDIT] Validacion reniec DNI, validando con boton [32m(3 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [1;31m|[m [31m46d2ee7[m -[33m[m [EDIT] creacion de metodo 'desactivar token' [32m(3 days ago) [1;34m<Enrique Chamaya>[m
+[1;31m|[m[1;31m/[m  
+*   [31m87f09a2[m -[33m[m Merge origin/amoreno into develop [32m(5 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [31m41823aa[m -[33m[m [EDIT] validado de DNI con la Reniec [32m(5 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;32m|[m * [31mabf396e[m -[33m[m [EDIT] Validacion de DNI con la RENIEC [32m(5 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [1;33m|[m [31m99b573e[m -[33m[m [EDIT] redireccionamiento a registro ficha [32m(5 days ago) [1;34m<Enrique Chamaya>[m
+* [1;33m|[m [31mff9525c[m -[33m[m [EDIT] implementacion de validacion de token y verificacion de persona - completado [32m(5 days ago) [1;34m<Enrique Chamaya>[m
+* [1;33m|[m [31m341abe0[m -[33m[m [EDIT] validacion de token en la pagina de verificacion de persona [32m(5 days ago) [1;34m<Enrique Chamaya>[m
+[1;33m|[m[1;33m/[m  
+*   [31m282b5b0[m -[33m[m [MERGE] XD [32m(5 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [31m13b125e[m -[33m[m [EDIT] verificaicon indexjsp [32m(5 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [1;35m|[m [31m8ae89c5[m -[33m[m [EDIT] MODIFICACION DE TOOLTIP [32m(5 days ago) [1;34m<Enrique Chamaya>[m
+* [1;35m|[m [31m9d5fb4b[m -[33m[m [EDIT] cambio en el diseño de verificacion de personal [32m(6 days ago) [1;34m<Enrique Chamaya>[m
+[1;35m|[m[1;35m/[m  
+*   [31m223b851[m -[33m[m Merge origin/amoreno into develop [32m(6 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m[31m\[m  
+[1;36m|[m * [31m9339007[m -[33m[m [EDIT] diseño verificacion [32m(6 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [31m|[m [31m60e6244[m -[33m[m [EDIT] implementacion de pagina de error de token [32m(6 days ago) [1;34m<Enrique Chamaya>[m
+[31m|[m[31m/[m  
+*   [31m4c5f397[m -[33m[m [MERGE] Verificacion y validacion de token [32m(6 days ago) [1;34m<Enrique Chamaya>[m
+[32m|[m[33m\[m  
+[32m|[m * [31meef4971[m -[33m[m [EDIT] verificacion de token - completado [32m(6 days ago) [1;34m<Enrique Chamaya>[m
+[32m|[m * [31mcdec940[m -[33m[m [EDIT] metodo valdiar existencia token [32m(6 days ago) [1;34m<Enrique Chamaya>[m
+[32m|[m * [31m17ae6f8[m -[33m[m [EDIT] metodos para la validacion de token [32m(6 days ago) [1;34m<Enrique Chamaya>[m
+[32m|[m * [31ma4aa489[m -[33m[m [EDIT] validacion de token - completado [32m(7 days ago) [1;34m<Enrique Chamaya>[m
+[32m|[m * [31m9d43c96[m -[33m[m [DELETE] eliminacion de clases sin usar (ficha, estado_ficha, token) [32m(7 days ago) [1;34m<Enrique Chamaya>[m
+* [33m|[m [31m81e40a3[m -[33m[m [EDIT] Verificacion de ingreso valido [32m(6 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31me16bf04[m -[33m[m [ADD] Pagina de verificacion [32m(6 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31m097e1af[m -[33m[m [EDIT] Validacion de filtros de fichas, agregado validacion solo fechas [32m(6 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31m554ba59[m -[33m[m [EDIT] Validacion de filtros [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31mad009e5[m -[33m[m [ADD] Error 404 page [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31mbf701a4[m -[33m[m [ADD] Listado de fichas por filtros completo [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31m2d5140b[m -[33m[m [EDIT] Metodo listar fichas [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31m89fd390[m -[33m[m [ADD] Accion de editar y agregado modal incompleto [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [33m|[m [31mcf33ccf[m -[33m[m [EDIT] ListadoDeFichas - responsive [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+[33m|[m[33m/[m  
+* [31m0b2572b[m -[33m[m [EDIT] mensajeDeAlerta [32m(7 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [31mb5d5e26[m -[33m[m [EDIT] config mensaje de errores - servlet registrar persona [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+* [31m5974945[m -[33m[m [EDIT] estilo de login footer [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+*   [31maa2e65a[m -[33m[m Merge branch 'develop' of http://version.sacooliveros.edu.pe/amoreno/trismegisto-planilla into echamaya [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+[34m|[m[35m\[m  
+[34m|[m * [31m5651169[m -[33m[m [EDIT] modificacion de query listar ficha [32m(8 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [35m|[m [31m47b6888[m -[33m[m [EDIT] modificacionquery registrar persona [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+[35m|[m[35m/[m  
+* [31m25b56e2[m -[33m[m [EDIT] Validacion de registro de extranjeros [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+* [31m6bf25a8[m -[33m[m [EDIT] validacion de acciones(iconos) [32m(8 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [31m342f943[m -[33m[m [DELETE] .keep [32m(8 days ago) [1;34m<Alonso Moreno Postigo>[m
+*   [31mf6de462[m -[33m[m [MERGE] envio correos y listado [32m(8 days ago) [1;34m<Alonso Moreno Postigo>[m
+[36m|[m[1;31m\[m  
+[36m|[m * [31mea9a602[m -[33m[m [ADD] Listado Datatable [32m(8 days ago) [1;34m<Alonso Moreno Postigo>[m
+[36m|[m * [31mad62b28[m -[33m[m [ADD] listarFichasDT [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[36m|[m * [31m873721b[m -[33m[m [EDIT] arreglos en navbar [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [1;31m|[m [31m6d0231e[m -[33m[m [EDIT] registro de persona - fronted & backend completado [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+* [1;31m|[m [31m5706e2a[m -[33m[m [EDIT] registro de ficha completada [32m(8 days ago) [1;34m<Enrique Chamaya>[m
+* [1;31m|[m [31m981a2e9[m -[33m[m [EDIT] metodo de envio de correo [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+* [1;31m|[m [31m0f56916[m -[33m[m [EDIT] registro de personal servlet (registro en las tablas personal, ficha, est_ficha, token_ficha) [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+[1;31m|[m[1;31m/[m  
+* [31mb42c366[m -[33m[m [EDIT] enviar paramteros al servlet registro persona [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+*   [31md4d8221[m -[33m[m [MERGE] ValidacionRENIEC y RegistroFicha [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [31m6bd7c1a[m -[33m[m [EDIT] enviar parametros para el registro de persona [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+[1;32m|[m * [31m852f7b2[m -[33m[m [EDIT] generar codigo de verificacion para el registro de token ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+[1;32m|[m * [31m65bf533[m -[33m[m [EDIT] metodo registrar token ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+[1;32m|[m * [31m781fe72[m -[33m[m [EDIT] metodo registrar estado ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+[1;32m|[m * [31m01fa1a3[m -[33m[m [EDIT] metodo registrar ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+* [1;33m|[m [31m24346a3[m -[33m[m [ADD] Validación de la RENIEC Agregado [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [1;33m|[m [31m1194cdb[m -[33m[m [ADD] por Validar con reniec el registro de ficha [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;33m|[m[1;33m/[m  
+*   [31m0b25cbf[m -[33m[m Merge origin/amoreno into develop [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [31m7ca0483[m -[33m[m [ADD] imagenes de usuario [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;34m|[m * [31ma7b0cc7[m -[33m[m [EDIT] Menu Arreglado al colapsar, agregado notificaciones html [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;34m|[m * [31m6bcb4a9[m -[33m[m [ADD] loader verificando usuario [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [1;35m|[m [31mdefa174[m -[33m[m [EDIT] return last key - metodo registrar persona [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+* [1;35m|[m [31mca1397f[m -[33m[m [EDIT] metodo registrar persona [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+* [1;35m|[m [31macc57a3[m -[33m[m [EDIT] validacion final para el registro de nueva ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+[1;35m|[m[1;35m/[m  
+* [31m3226327[m -[33m[m [ADD] Libreria de codificacion [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+*   [31m917dc0a[m -[33m[m [MERGE] Resolved Merge => Validacion + servicios [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m[31m\[m  
+[1;36m|[m * [31mb9284f8[m -[33m (origin/amoreno_services, amoreno_services)[m [DELETE] login css [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m28732d4[m -[33m[m [EDIT] redirección de logueo [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m71744fe[m -[33m[m [EDIT] fotosDePerfil y modificaciones en los nombres [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m9544c57[m -[33m[m [EDIT] CapitalizeCase a los datos traidos desde la sesion [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m40a4cac[m -[33m[m [ADD] capitalizeLetters [32m(9 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31mf760570[m -[33m[m [EDIT] sidebarJsp TODO: SideBar Bug al achicar [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m994a56b[m -[33m[m [EDIT] Pages Headers Con Servicios [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m25e4ac0[m -[33m[m [EDIT] Construccion del menu con JsonObject y JsonArray - Servlet limpio de HTML [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m7f52b03[m -[33m[m [EDIT] servicios copy&paste2 [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m7f2e7a7[m -[33m[m [EDIT] servicios copy&paste [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m3d185d6[m -[33m[m [ADD] menuServlet con sesion [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31mdead423[m -[33m[m [ADD] Invalidacion de sesion [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m1657824[m -[33m[m [ADD] Validacion de usuarios - login [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m65aa88a[m -[33m[m [EDIT] Validacion webservice - UsuarioServlet [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+[1;36m|[m * [31m383d6ef[m -[33m[m [ADD] webservice SOA para validacion de usuarios, proyectos [32m(10 days ago) [1;34m<Alonso Moreno Postigo>[m
+* [31m|[m [31mebebc0d[m -[33m[m [EDIT] validacion servlet - registro de ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m
+* [31m|[m [31m3426fb7[m -[33m[m [EDIT] validacion backend nueva ficha [32m(9 days ago) [1;34m<Enrique Chamaya>[m

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is Metro/2.3.1-b419 (branches/2.3.1.x-7937; 2014-08-04T08:11:03+0000) JAXWS-RI/2.2.10-b140803.1500 JAXWS-API/2.2.11 JAXB-RI/2.2.10-b140802.1033 JAXB-API/2.2.12-b140109.1041 svn-revision#unknown. --><xs:schema xmlns:tns="http://webservices.webservicesseguridad.siso.pe/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservices.webservicesseguridad.siso.pe/">
+
+<xs:element name="consultarProyecto" type="tns:consultarProyecto"/>
+
+<xs:element name="consultarProyectoResponse" type="tns:consultarProyectoResponse"/>
+
+<xs:element name="listarProyectoUsuario" type="tns:listarProyectoUsuario"/>
+
+<xs:element name="listarProyectoUsuarioResponse" type="tns:listarProyectoUsuarioResponse"/>
+
+<xs:complexType name="listarProyectoUsuario">
+<xs:sequence>
+<xs:element name="codigoUsuario" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="listarProyectoUsuarioResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:proyectoBean" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="proyectoBean">
+<xs:sequence>
+<xs:element name="codigoProyecto" type="xs:int"/>
+<xs:element name="estadoProyecto" type="xs:int"/>
+<xs:element name="nombreProyecto" type="xs:string" minOccurs="0"/>
+<xs:element name="urlProyecto" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarProyecto">
+<xs:sequence>
+<xs:element name="name" type="xs:int" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarProyectoResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:proyectoBean" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>

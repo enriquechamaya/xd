@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is Metro/2.3.1-b419 (branches/2.3.1.x-7937; 2014-08-04T08:11:03+0000) JAXWS-RI/2.2.10-b140803.1500 JAXWS-API/2.2.11 JAXB-RI/2.2.10-b140802.1033 JAXB-API/2.2.12-b140109.1041 svn-revision#unknown. --><xs:schema xmlns:tns="http://webservices.webservicesseguridad.siso.pe/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://webservices.webservicesseguridad.siso.pe/">
+
+<xs:element name="consultarDatosWebservice" type="tns:consultarDatosWebservice"/>
+
+<xs:element name="consultarDatosWebserviceResponse" type="tns:consultarDatosWebserviceResponse"/>
+
+<xs:element name="validarUsuarioWebservice" type="tns:validarUsuarioWebservice"/>
+
+<xs:element name="validarUsuarioWebserviceResponse" type="tns:validarUsuarioWebserviceResponse"/>
+
+<xs:complexType name="validarUsuarioWebservice">
+<xs:sequence>
+<xs:element name="usuario" type="xs:string" minOccurs="0"/>
+<xs:element name="clave" type="xs:string" minOccurs="0"/>
+<xs:element name="proyecto" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="validarUsuarioWebserviceResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:int" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarDatosWebservice">
+<xs:sequence>
+<xs:element name="usuario" type="xs:string" minOccurs="0"/>
+<xs:element name="clave" type="xs:string" minOccurs="0"/>
+<xs:element name="proyecto" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="consultarDatosWebserviceResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:usuarioBean" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="usuarioBean">
+<xs:sequence>
+<xs:element name="apellidoMaternoPersona" type="xs:string" minOccurs="0"/>
+<xs:element name="apellidoPaternoPersona" type="xs:string" minOccurs="0"/>
+<xs:element name="codigoArea" type="xs:int"/>
+<xs:element name="codigoCargo" type="xs:int"/>
+<xs:element name="codigoProyecto" type="xs:int"/>
+<xs:element name="codigoProyectoDetalle" type="xs:int"/>
+<xs:element name="codigoSede" type="xs:int"/>
+<xs:element name="codigoTipoUsuario" type="xs:int"/>
+<xs:element name="codigoTrabajador" type="xs:int"/>
+<xs:element name="codigoUsuario" type="xs:int"/>
+<xs:element name="codigoUsuarioDetalle" type="xs:int"/>
+<xs:element name="contrasena" type="xs:string" minOccurs="0"/>
+<xs:element name="dni" type="xs:string" minOccurs="0"/>
+<xs:element name="estadoProyecto" type="xs:int"/>
+<xs:element name="estadoProyectoDetalle" type="xs:int"/>
+<xs:element name="estadoTipoUsuario" type="xs:int"/>
+<xs:element name="estadoUsuario" type="xs:int"/>
+<xs:element name="estadoUsuarioDetalle" type="xs:int"/>
+<xs:element name="nombreArea" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreCargo" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreProyecto" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreSede" type="xs:string" minOccurs="0"/>
+<xs:element name="nombreTipoUsuario" type="xs:string" minOccurs="0"/>
+<xs:element name="nombresPersona" type="xs:string" minOccurs="0"/>
+<xs:element name="numeroDocumentoUsuario" type="xs:string" minOccurs="0"/>
+<xs:element name="urlProyecto" type="xs:string" minOccurs="0"/>
+<xs:element name="usuario" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
