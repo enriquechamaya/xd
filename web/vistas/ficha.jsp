@@ -588,24 +588,25 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="row">
-                  <div class="col-md-10 col-md-offset-1">
-                    <div class="panel so-card-4">
-                      <div class="panel-heading bg-blue-800">
-                        <h6 class="panel-title text-semibold">
-                          <i class="fa fa-briefcase fa-lg"></i>&nbsp;&nbsp;Experiencia laboral
-                        </h6>
-                        <div class="heading-elements">
-                          <div class="form-group tp-fix-switch">
-                            <label class="checkbox-inline checkbox-switchery checkbox-right">
-                              <input type="checkbox" class="switch" id="chkExperienciaLaboral"  name="chkExperienciaLaboral">
-                              <span id="textChkExperienciaLaboral" class="text-semibold text-uppercase tp-info-experiencia-laboral">¿Tiene experiencia laboral?</span>
-                            </label>
-                            <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-semibold text-uppercase tp-info-experiencia-laboral">NO</span>
+                  <form action="#" name="formExperienciaLaboral" id="formExperienciaLaboral">
+                    <div class="col-md-10 col-md-offset-1">
+                      <div class="panel so-card-4">
+                        <div class="panel-heading bg-blue-800">
+                          <h6 class="panel-title text-semibold">
+                            <i class="fa fa-briefcase fa-lg"></i>&nbsp;&nbsp;Experiencia laboral
+                          </h6>
+                          <div class="heading-elements">
+                            <div class="form-group tp-fix-switch">
+                              <label class="checkbox-inline checkbox-switchery checkbox-right">
+                                <input type="checkbox" class="switch" id="chkExperienciaLaboral"  name="chkExperienciaLaboral">
+                                <span class="text-semibold text-uppercase tp-info-experiencia-laboral">¿Tiene experiencia laboral?</span>
+                              </label>
+                              <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-semibold text-uppercase tp-info-experiencia-laboral">NO</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="panel-body" id="divExperienciaLaboral">
-                        <form action="#" name="formExperienciaLaboral" id="formExperienciaLaboral">
+                        <div class="panel-body" id="divExperienciaLaboral">
+
                           <div class="row">
                             <div class="col-md-3">
                               <div class="form-group">
@@ -673,10 +674,11 @@
                               </div>
                             </div>
                           </div>
-                        </form>
+
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -685,24 +687,25 @@
             <!--DATOS FONDO PENSION-->
             <div class="row">
               <div class="col-md-12">
-                <div class="col-md-6 col-md-offset-3">
-                  <div class="panel so-card-4">
-                    <div class="panel-heading bg-blue-800">
-                      <h6 class="panel-title text-semibold">
-                        <i class="fa fa-bookmark fa-lg"></i>&nbsp;&nbsp;Régimen pensionario
-                      </h6>
-                      <div class="heading-elements">
-                        <div class="form-group tp-fix-switch">
-                          <label class="checkbox-inline checkbox-switchery checkbox-right">
-                            <input type="checkbox" class="switch" checked="checked" id="chkFondoPension"  name="chkFondoPension" checked>
-                            <span id="textChkExperienciaLaboral" class="text-semibold text-uppercase tp-info-experiencia-laboral">¿Está inscrito en un sistema pensionario?</span>
-                          </label>
-                          <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-semibold text-uppercase tp-info-experiencia-laboral">SI</span>
+                <form action="#" name="formFondoPension" id="formFondoPension">
+                  <div class="col-md-6 col-md-offset-3">
+                    <div class="panel so-card-4">
+                      <div class="panel-heading bg-blue-800">
+                        <h6 class="panel-title text-semibold">
+                          <i class="fa fa-bookmark fa-lg"></i>&nbsp;&nbsp;Régimen pensionario
+                        </h6>
+                        <div class="heading-elements">
+                          <div class="form-group tp-fix-switch">
+                            <label class="checkbox-inline checkbox-switchery checkbox-right">
+                              <input type="checkbox" class="switch" checked="checked" id="chkFondoPension"  name="chkFondoPension" checked>
+                              <span id="textChkExperienciaLaboral" class="text-semibold text-uppercase tp-info-experiencia-laboral">¿Está inscrito en un sistema pensionario?</span>
+                            </label>
+                            <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-semibold text-uppercase tp-info-experiencia-laboral">SI</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="panel-body">
-                      <form action="#" name="formFondoPension" id="formFondoPension">
+                      <div class="panel-body">
+
                         <div class="row">
                           <div class="col-lg-12 col-md-12 col-sm-12">
                             <label class="display-block text-uppercase">
@@ -716,10 +719,11 @@
                             </small>
                           </div>
                         </div>
-                      </form>
+
+                      </div>
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
             <!--DATOS FONDO PENSION-->

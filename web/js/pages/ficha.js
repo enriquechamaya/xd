@@ -144,7 +144,8 @@ const DOMComponents = {
       })
     document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento, #cboProvinciaResidencia, #cboDistritoResidencia, #cboEstadoEstudioFormacionAcademica')
       .forEach((el) => helpers.defaultSelect(el))
-    document.querySelectorAll('#txtNumeroDocumentoFamiliar').forEach((el) => el.setAttribute('disabled', true))
+    document.querySelectorAll('#txtNumeroDocumentoFamiliar, #txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
+      .forEach((el) => el.setAttribute('disabled', true))
   }
 }
 const httpRequest = {
@@ -350,6 +351,20 @@ const DOMEvents = () => {
     }
   })
 
+  // experiencia laboral
+  document.querySelector('#chkExperienciaLaboral').addEventListener('click', (e) => {
+    let chkExperienciaLaboral = document.querySelector('#chkExperienciaLaboral')
+    if (chkExperienciaLaboral.checked) {
+      document.querySelector('#textChkExperienciaLaboral').innerHTML = 'SI&nbsp;&nbsp;'
+      document.querySelectorAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral')
+        .forEach((el) => {
+          el.removeAttribute('disabled')
+        })
+    } else {
+      document.querySelector('#textChkExperienciaLaboral').innerHTML = 'NO'
+    }
+  })
+
   // datos familiares
   document.querySelector('#cbotipoDocumentoFamiliar').addEventListener('change', (e) => {
     let tipoDocumento = parseInt(e.currentTarget.value)
@@ -469,7 +484,7 @@ const formsValidation = {
   init() {
     this.initValidateForm()
     this.initRulesForms()
-    this.actionFormChange()
+    this.initActionFormChange()
   },
   initRulesForms() {
     this.datosPersonales.rules()
@@ -477,6 +492,13 @@ const formsValidation = {
     this.datosFormacionAcademica.rules()
     this.datosExperienciaLaboral.rules()
     this.datosRegimenPensionario.rules()
+  },
+  initActionFormChange() {
+    this.datosPersonales.formChangeListener()
+    this.datosFamiliares.formChangeListener()
+    this.datosFormacionAcademica.formChangeListener()
+    this.datosExperienciaLaboral.formChangeListener()
+    this.datosRegimenPensionario.formChangeListener()
   },
   datosPersonales: {
     rules() {
@@ -548,6 +570,35 @@ const formsValidation = {
         required: true,
         accept: 'image/png, image/jpeg, image/jpg'
       })
+    },
+    formChangeListener() {
+      document.querySelector('#formDatosPersonales').addEventListener('change', (e) => {
+        $(e.currentTarget).valid()
+        this.rules()
+        window.localStorage.setItem('jsonFormDatosPersonales', JSON.stringify({
+          ruc: document.querySelector('#txtNumeroRUC').value,
+          apellidoPaterno: document.querySelector('#txtApellidoPaterno').value,
+          apellidoMaterno: document.querySelector('#txtApellidoMaterno').value,
+          nombre: document.querySelector('#txtNombre').value,
+          sexo: document.querySelector('#cboSexo').value,
+          codigoEstadoCivil: document.querySelector('#cboEstadoCivil').value,
+          fechaNacimiento: document.querySelector('#dpFechaNacimiento').value,
+          codigoNacionalidad: document.querySelector('#cboNacionalidad').value,
+          codigoDepartamentoNacimiento: document.querySelector('#cboDepartamentoNacimiento').value,
+          codigoProvinciaNacimiento: document.querySelector('#cboProvinciaNacimiento').value,
+          codigoDistritoNacimiento: document.querySelector('#cboDistritoNacimiento').value,
+          direccionDocumento: document.querySelector('#txtDireccionDocumento').value,
+          telefonoFijo: document.querySelector('#txtTelefonoFijo').value,
+          telefonoMovil: document.querySelector('#txtTelefonoMovil').value,
+          correo: document.querySelector('#txtCorreoElectronico').value,
+          codigoDepartamentoResidencia: document.querySelector('#cboDepartamentoResidencia').value,
+          codigoProvinciaResidencia: document.querySelector('#cboProvinciaResidencia').value,
+          codigoDistritoResidencia: document.querySelector('#cboDistritoResidencia').value,
+          direccionResidencia: document.querySelector('#txtDireccionResidencia').value,
+          latitudResidencia: document.querySelector('#latitudResidencia').value,
+          longitudResidencia: document.querySelector('#longitudResidencia').value
+        }))
+      })
     }
   },
   datosFamiliares: {
@@ -583,6 +634,12 @@ const formsValidation = {
       $(document.querySelector('#txtTelefonoFamiliar')).rules('add', {
         number: true
       })
+    },
+    formChangeListener() {
+      document.querySelector('#formDatosFamiliares').addEventListener('change', (e) => {
+        $(e.currentTarget).valid()
+        this.rules()
+      })
     }
   },
   datosFormacionAcademica: {
@@ -611,6 +668,12 @@ const formsValidation = {
         required: true,
         dateonly: true
       })
+    },
+    formChangeListener() {
+      document.querySelector('#formFormacionAcademica').addEventListener('change', (e) => {
+        $(e.currentTarget).valid()
+        this.rules()
+      })
     }
   },
   datosExperienciaLaboral: {
@@ -634,6 +697,12 @@ const formsValidation = {
       $(document.querySelector('#txtTelefonoExperienciaLaboral')).rules('add', {
         number: true
       })
+    },
+    formChangeListener() {
+      document.querySelector('#formExperienciaLaboral').addEventListener('change', (e) => {
+        $(e.currentTarget).valid()
+        this.rules()
+      })
     }
   },
   datosRegimenPensionario: {
@@ -641,23 +710,26 @@ const formsValidation = {
       $(document.querySelector('#rdFondoPension')).rules('add', {
         required: true
       })
+    },
+    formChangeListener() {
+      document.querySelector('#formFondoPension').addEventListener('change', (e) => {
+        $(e.currentTarget).valid()
+        this.rules()
+      })
     }
   },
   initValidateForm() {
     document.querySelectorAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
       .forEach((el) => $(el).validate())
-  },
-  actionFormChange() {
-    document.querySelectorAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
-      .forEach((el) => {
-        el.addEventListener('change', (e) => {
-          $(e.currentTarget).valid()
-          this.initRulesForms()
-        })
-      })
   }
 }
+const getValuesFromLocalStorage = {
 
+}
+// globals
+let objFamiliar = [], objExperienciaLaboral = [], objFormacionAcademica = []
+let codigoUbigeoNacimiento = 0, codigoUbigeoResidencia = 0
+let flagExperienciaLaboral = false, flagRegimenPensionario = true
 
 DOMComponents.init()
 initRequest()
@@ -686,5 +758,5 @@ formsValidation.init()
 
 var switches = Array.prototype.slice.call(document.querySelectorAll('.switch'));
 switches.forEach(function (el) {
-  var switchery = new Switchery(el,  {color: '#FFE66D', secondaryColor: '#F7FFF7'});
+  var switchery = new Switchery(el, {color: '#FFE66D', secondaryColor: '#F7FFF7'});
 });
