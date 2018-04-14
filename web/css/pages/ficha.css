@@ -45,7 +45,7 @@
 .validation-error-label, .validation-valid-label{
   display: inline-block;
 }
-
+/*
 .div-chk-experiencia-laboral{
   display: flex;
   justify-content: space-around;
@@ -68,5 +68,12 @@
   position: relative;
   top: 8px;
   right: 8px;
+}*/
+
+.tp-fix-switch{
+  display: flex;
+  justify-content: space-around;
+  align-content: center;
+  margin-top: 9px;
 }
 

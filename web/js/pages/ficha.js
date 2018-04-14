@@ -1,3 +1,4 @@
+"use strict";
 const helpers = {
   defaultSelect(el) {
     el.setAttribute('disabled', true)
@@ -47,34 +48,34 @@ const DOMComponents = {
   },
   noEntryInputs() {
     // datos personales
-    new Input({el: document.querySelector('#txtNumeroRUC'), param: 'numbers'}).validate()
-    new Input({el: document.querySelector('#txtApellidoPaterno'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#txtApellidoMaterno'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#txtNombre'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#dpFechaNacimiento'), param: 'date'}).validate()
-    new Input({el: document.querySelector('#txtTelefonoFijo'), param: 'numbers'}).validate()
-    new Input({el: document.querySelector('#txtTelefonoMovil'), param: 'numbers'}).validate()
+    new Input({el: '#txtNumeroRUC', param: 'numbers'}).validate()
+    new Input({el: '#txtApellidoPaterno', param: 'letters'}).validate()
+    new Input({el: '#txtApellidoMaterno', param: 'letters'}).validate()
+    new Input({el: '#txtNombre', param: 'letters'}).validate()
+    new Input({el: '#dpFechaNacimiento', param: 'date'}).validate()
+    new Input({el: '#txtTelefonoFijo', param: 'numbers'}).validate()
+    new Input({el: '#txtTelefonoMovil', param: 'numbers'}).validate()
 
     // datos familiares
-    new Input({el: document.querySelector('#txtApellidoPaternoFamiliar'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#txtApellidoMaternoFamiliar'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#txtNombreFamiliar'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#dpFechaNacimientoFamiliar'), param: 'date'}).validate()
-    new Input({el: document.querySelector('#txtNumeroDocumentoFamiliar'), param: 'alphanumeric'}).validate()
-    new Input({el: document.querySelector('#txtTelefonoFamiliar'), param: 'numbers'}).validate()
+    new Input({el: '#txtApellidoPaternoFamiliar', param: 'letters'}).validate()
+    new Input({el: '#txtApellidoMaternoFamiliar', param: 'letters'}).validate()
+    new Input({el: '#txtNombreFamiliar', param: 'letters'}).validate()
+    new Input({el: '#dpFechaNacimientoFamiliar', param: 'date'}).validate()
+    new Input({el: '#txtNumeroDocumentoFamiliar', param: 'alphanumeric'}).validate()
+    new Input({el: '#txtTelefonoFamiliar', param: 'numbers'}).validate()
 
     // formacion academica
-    new Input({el: document.querySelector('#txtCentroEstudiosFormacionAcademica'), rules: 'abcdefghijklmnñopqrstuvwxyz°,.-1234567890 '}).validate()
-    new Input({el: document.querySelector('#txtCarreraProfesional'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#dpFechaInicioFormacionAcademica'), param: 'date'}).validate()
-    new Input({el: document.querySelector('#dpFechaFinFormacionAcademica'), param: 'date'}).validate()
+    new Input({el: '#txtCentroEstudiosFormacionAcademica', rules: 'abcdefghijklmnñopqrstuvwxyz°,.-1234567890 '}).validate()
+    new Input({el: '#txtCarreraProfesional', param: 'letters'}).validate()
+    new Input({el: '#dpFechaInicioFormacionAcademica', param: 'date'}).validate()
+    new Input({el: '#dpFechaFinFormacionAcademica', param: 'date'}).validate()
 
     // experiencia laboral
-    new Input({el: document.querySelector('#txtEmpresaExperienciaLaboral'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#txtCargoExperienciaLaboral'), param: 'letters'}).validate()
-    new Input({el: document.querySelector('#dpFechaInicioExperienciaLaboral'), param: 'date'}).validate()
-    new Input({el: document.querySelector('#dpFechaFinExperienciaLaboral'), param: 'date'}).validate()
-    new Input({el: document.querySelector('#txtTelefonoExperienciaLaboral'), param: 'numbers'}).validate()
+    new Input({el: '#txtEmpresaExperienciaLaboral', param: 'letters'}).validate()
+    new Input({el: '#txtCargoExperienciaLaboral', param: 'letters'}).validate()
+    new Input({el: '#dpFechaInicioExperienciaLaboral', param: 'date'}).validate()
+    new Input({el: '#dpFechaFinExperienciaLaboral', param: 'date'}).validate()
+    new Input({el: '#txtTelefonoExperienciaLaboral', param: 'numbers'}).validate()
   },
   initializePluginComponents() {
     // radio button
@@ -89,7 +90,10 @@ const DOMComponents = {
       showButtonPanel: false,
       changeMonth: true,
       changeYear: true,
-      yearRange: '1900:' + date.getFullYear()
+      yearRange: '1900:' + date.getFullYear(),
+      onselect: function () {
+        $(this).valid()
+      }
     });
 
     // datepicker
@@ -130,14 +134,17 @@ const DOMComponents = {
     });
   },
   configComponents() {
-    // caso especial
+
     document.querySelector('#cboDepartamentoNacimiento').setAttribute('disabled', true)
     $(document.querySelector('#cboDepartamentoNacimiento')).selectpicker('refresh')
-    // ------------------------
-
-    document.querySelector('#dpFechaNacimiento').setAttribute('readonly', true)
-
-    document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento, #cboProvinciaResidencia, #cboDistritoResidencia').forEach((el) => helpers.defaultSelect(el))
+    document.querySelectorAll('#dpFechaNacimiento, #dpFechaNacimientoFamiliar, #dpFechaInicioFormacionAcademica, #dpFechaFinFormacionAcademica, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral')
+      .forEach((el) => {
+        el.setAttribute('readonly', true)
+        el.style.cursor = 'pointer'
+      })
+    document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento, #cboProvinciaResidencia, #cboDistritoResidencia, #cboEstadoEstudioFormacionAcademica')
+      .forEach((el) => helpers.defaultSelect(el))
+    document.querySelectorAll('#txtNumeroDocumentoFamiliar').forEach((el) => el.setAttribute('disabled', true))
   }
 }
 const httpRequest = {
@@ -197,6 +204,80 @@ const httpRequest = {
           accion: 'listarDistrito',
           codigoDepartamento: codigoDepartamento,
           codigoProvincia: codigoProvincia
+        }
+      })
+    }
+  },
+  datosFamiliares: {
+    listarParentesco() {
+      return helpers.ajaxRequest({
+        url: '../ParentescoServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Listando parentescos',
+        body: {
+          accion: 'listarParentesco'
+        }
+      })
+    },
+    listarTipoDocumento() {
+      return helpers.ajaxRequest({
+        url: '../TipoDocumentoServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Listado documentos',
+        body: {
+          accion: 'listarTipoDocumento'
+        }
+      })
+    },
+    obtenerConfiguracionTipoDocumento(codigoTipoDocumento) {
+      return helpers.ajaxRequest({
+        url: '../TipoDocumentoServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Obteniendo configuración del documento',
+        body: {
+          accion: 'obtenerLongitudTipoEntrdadaTipoDocumento',
+          codigoTipoDocumento: codigoTipoDocumento
+        }
+      })
+    }
+  },
+  datosFormacionAcademica: {
+    listarGradoEstudio() {
+      return helpers.ajaxRequest({
+        url: '../NivelEstudioServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Listando grado de estudios',
+        body: {
+          accion: 'listarNivelEstudio'
+        }
+      })
+    },
+    listarEstadoEstudio(codigoGradoEstudio) {
+      return helpers.ajaxRequest({
+        url: '../EstadoEstudioServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Listando estado de estudios',
+        body: {
+          accion: 'listarEstadoEstudio',
+          codigoNivelEstudio: codigoGradoEstudio
+        }
+      })
+    }
+  },
+  datosRegimenPensionario: {
+    listarRegimenPensionario() {
+      return helpers.ajaxRequest({
+        url: '../FondoPensionServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Listando regimen pensionario',
+        body: {
+          accion: 'listarFondoPension'
         }
       })
     }
@@ -268,6 +349,53 @@ const DOMEvents = () => {
       helpers.defaultSelect(document.querySelector('#cboDistritoResidencia'))
     }
   })
+
+  // datos familiares
+  document.querySelector('#cbotipoDocumentoFamiliar').addEventListener('change', (e) => {
+    let tipoDocumento = parseInt(e.currentTarget.value)
+    if (tipoDocumento !== 0) {
+      document.querySelector('#txtNumeroDocumentoFamiliar').removeAttribute('disabled')
+      document.querySelector('#txtNumeroDocumentoFamiliar').value = ''
+      httpRequest.datosFamiliares.obtenerConfiguracionTipoDocumento(tipoDocumento)
+        .then((data) => {
+          if (data.status) {
+            return {
+              longitud: data.data.tipodocumentos[0].longitud,
+              tipoEntrada: data.data.tipodocumentos[0].tipoEntrada
+            }
+          } else {
+            alert('ERROR A OBTENER CONFIGURACION DEL TIPO DE DOCUMENTO')
+          }
+        })
+        .then((configTipoDocumento) => {
+          document.querySelector('#txtNumeroDocumentoFamiliar').setAttribute('maxlength', configTipoDocumento.longitud)
+          if (configTipoDocumento.tipoEntrada === 'N') {
+            new Input({el: '#txtNumeroDocumentoFamiliar', param: 'numbers'}).validate()
+          } else {
+            new Input({el: '#txtNumeroDocumentoFamiliar', param: 'alphanumeric'}).validate()
+          }
+          document.querySelector('#txtNumeroDocumentoFamiliar').focus()
+        })
+    } else {
+      document.querySelector('#txtNumeroDocumentoFamiliar').setAttribute('disabled', true)
+      document.querySelector('#txtNumeroDocumentoFamiliar').value = ''
+    }
+  })
+
+  // formacion academica
+  document.querySelector('#cboGradoEstudioFormacionAcademica').addEventListener('change', (e) => {
+    let gradoEstudio = parseInt(e.currentTarget.value)
+    if (gradoEstudio !== 0) {
+      httpRequest.datosFormacionAcademica.listarEstadoEstudio(gradoEstudio)
+        .then((data) => {
+          let options = helpers.createSelectOptions(data.data.estadoestudio, 'codigoEstadoEstudio', 'nombre')
+          helpers.filteredSelect(document.querySelector('#cboEstadoEstudioFormacionAcademica'), options)
+        })
+    } else {
+      helpers.defaultSelect(document.querySelector('#cboEstadoEstudioFormacionAcademica'))
+    }
+  })
+
 }
 const initRequest = () => {
   return new Promise((resolve, reject) => {
@@ -275,8 +403,7 @@ const initRequest = () => {
       httpRequest.datosPersonales.listarEstadoCivil()
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.EstadosCiviles, 'codigoEstadoCivil', 'nombre')
-          document.querySelector('#cboEstadoCivil').innerHTML = options
-          $(document.querySelector('#cboEstadoCivil')).selectpicker('refresh')
+          helpers.filteredSelect(document.querySelector('#cboEstadoCivil'), options)
         })
       httpRequest.datosPersonales.listarNacionalidad()
         .then((data) => {
@@ -285,16 +412,52 @@ const initRequest = () => {
           for (let i in nacionalidad) {
             cboNacionalidad += `<option value="${nacionalidad[i].codigoNacionalidad}" data-content="${nacionalidad[i].gentilicio} <img class='tp-countrie-icon' src='../img/countries/${nacionalidad[i].iso}.svg'"></option>`;
           }
-          document.querySelector('#cboNacionalidad').innerHTML = cboNacionalidad
-          $(document.querySelector('#cboNacionalidad')).selectpicker('refresh');
+          helpers.filteredSelect(document.querySelector('#cboNacionalidad'), cboNacionalidad)
         })
       httpRequest.datosPersonales.listarDepartamentos()
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.departamentos, 'codigoDepartamento', 'nombreDepartamento')
-          document.querySelectorAll('#cboDepartamentoNacimiento, #cboDepartamentoResidencia').forEach((el) => {
-            el.innerHTML = options
-            $(el).selectpicker('refresh')
-          })
+          helpers.filteredSelect(document.querySelector('#cboDepartamentoResidencia'), options)
+          document.querySelector('#cboDepartamentoNacimiento').innerHTML = options
+          document.querySelector('#cboDepartamentoNacimiento').setAttribute('disabled', true)
+          $(document.querySelector('#cboDepartamentoNacimiento')).selectpicker('refresh')
+        })
+      httpRequest.datosFamiliares.listarParentesco()
+        .then((data) => {
+          let options = helpers.createSelectOptions(data.data.parentescos, 'codigoParentesco', 'nombre')
+          helpers.filteredSelect(document.querySelector('#cboParentescoFamiliar'), options)
+        })
+      httpRequest.datosFamiliares.listarTipoDocumento()
+        .then((data) => {
+          let options = helpers.createSelectOptions(data.data.tipodocumentos, 'codigoTipoDocumento', 'descripcionCorta')
+          helpers.filteredSelect(document.querySelector('#cbotipoDocumentoFamiliar'), options)
+        })
+      httpRequest.datosFormacionAcademica.listarGradoEstudio().
+        then((data) => {
+          let options = helpers.createSelectOptions(data.data.nivelestudio, 'codigoNivelEstudio', 'nombre')
+          helpers.filteredSelect(document.querySelector('#cboGradoEstudioFormacionAcademica'), options)
+        })
+      httpRequest.datosRegimenPensionario.listarRegimenPensionario()
+        .then((data) => {
+          if (data.status) {
+            let fondopension = data.data.fondopension;
+            let rowFondoPension = ``;
+            for (let i in fondopension) {
+              rowFondoPension += `
+                <div class="radio">
+                    <label>
+                        <input type="radio" id="rd${fondopension[i].descripcionCorta}" name="rdFondoPension" class="styled" value="${fondopension[i].codigoFondoPension}">
+                        ${fondopension[i].descripcionLarga} <span class="text-bold">(${fondopension[i].descripcionCorta})</span>
+                    </label>
+                </div>        
+                `;
+            }
+            document.querySelector('#divFondoPension').innerHTML = rowFondoPension
+            document.querySelector('#rdAFP').setAttribute('required', true)
+            $(".styled, .multiselect-container input").uniform({
+              radioClass: 'choice'
+            });
+          }
         })
       resolve('ok')
     } catch (err) {
@@ -302,7 +465,198 @@ const initRequest = () => {
     }
   })
 }
-
+const formsValidation = {
+  init() {
+    this.initValidateForm()
+    this.initRulesForms()
+    this.actionFormChange()
+  },
+  initRulesForms() {
+    this.datosPersonales.rules()
+    this.datosFamiliares.rules()
+    this.datosFormacionAcademica.rules()
+    this.datosExperienciaLaboral.rules()
+    this.datosRegimenPensionario.rules()
+  },
+  datosPersonales: {
+    rules() {
+      $(document.querySelector('#txtNumeroRUC')).rules('add', {
+        number: true,
+        minlength: 11,
+        maxlength: 11
+      })
+      $(document.querySelector('#txtApellidoPaterno')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#txtApellidoMaterno')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#txtNombre')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#cboSexo')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboEstadoCivil')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#dpFechaNacimiento')).rules('add', {
+        required: true,
+        dateonly: true
+      })
+      $(document.querySelector('#cboNacionalidad')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboDepartamentoNacimiento')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboProvinciaNacimiento')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboDistritoNacimiento')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#txtDireccionDocumento')).rules('add', {
+        required: true
+      })
+      $(document.querySelector('#txtTelefonoFijo')).rules('add', {
+        number: true
+      })
+      $(document.querySelector('#txtTelefonoMovil')).rules('add', {
+        number: true
+      })
+      $(document.querySelector('#txtCorreoElectronico')).rules('add', {
+        required: true,
+        email: true
+      })
+      $(document.querySelector('#cboDepartamentoResidencia')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboProvinciaResidencia')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboDistritoResidencia')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#txtDireccionResidencia')).rules('add', {
+        required: true
+      })
+      $(document.querySelector('#flImage')).rules('add', {
+        required: true,
+        accept: 'image/png, image/jpeg, image/jpg'
+      })
+    }
+  },
+  datosFamiliares: {
+    rules() {
+      $(document.querySelector('#cboParentescoFamiliar')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#txtApellidoPaternoFamiliar')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#txtApellidoMaternoFamiliar')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#txtNombreFamiliar')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#dpFechaNacimientoFamiliar')).rules('add', {
+        required: true,
+        dateonly: true
+      })
+      $(document.querySelector('#cbotipoDocumentoFamiliar')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#txtNumeroDocumentoFamiliar')).rules('add', {
+        required: true
+      })
+      $(document.querySelector('#cboSexoFamiliar')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#txtTelefonoFamiliar')).rules('add', {
+        number: true
+      })
+    }
+  },
+  datosFormacionAcademica: {
+    rules() {
+      $(document.querySelector('#cboGradoEstudioFormacionAcademica')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboEstadoEstudioFormacionAcademica')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#cboPosicionInstitucion')).rules('add', {
+        valueNotEquals: '0'
+      })
+      $(document.querySelector('#txtCentroEstudiosFormacionAcademica')).rules('add', {
+        required: true
+      })
+      $(document.querySelector('#txtCarreraProfesional')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#dpFechaInicioFormacionAcademica')).rules('add', {
+        required: true,
+        dateonly: true
+      })
+      $(document.querySelector('#dpFechaFinFormacionAcademica')).rules('add', {
+        required: true,
+        dateonly: true
+      })
+    }
+  },
+  datosExperienciaLaboral: {
+    rules() {
+      $(document.querySelector('#txtEmpresaExperienciaLaboral')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#txtCargoExperienciaLaboral')).rules('add', {
+        required: true,
+        lettersonly: true
+      })
+      $(document.querySelector('#dpFechaInicioExperienciaLaboral')).rules('add', {
+        required: true,
+        dateonly: true
+      })
+      $(document.querySelector('#dpFechaFinExperienciaLaboral')).rules('add', {
+        required: true,
+        dateonly: true
+      })
+      $(document.querySelector('#txtTelefonoExperienciaLaboral')).rules('add', {
+        number: true
+      })
+    }
+  },
+  datosRegimenPensionario: {
+    rules() {
+      $(document.querySelector('#rdFondoPension')).rules('add', {
+        required: true
+      })
+    }
+  },
+  initValidateForm() {
+    document.querySelectorAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
+      .forEach((el) => $(el).validate())
+  },
+  actionFormChange() {
+    document.querySelectorAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
+      .forEach((el) => {
+        el.addEventListener('change', (e) => {
+          $(e.currentTarget).valid()
+          this.initRulesForms()
+        })
+      })
+  }
+}
 
 
 DOMComponents.init()
@@ -310,11 +664,12 @@ initRequest()
   .then(() => {
     DOMEvents()
   })
+formsValidation.init()
 /*
  TODO:
- ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
- 
- 
+ 1) ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
+ 2) AL CAMBIAR EL TIPO DE DOCUMENTO DE FAMILIAR, LAS REGLAS DE LOS INPUTS DEBE APLICARSE
+ 3) CUANDO SE SELECCIONA UN DATEPICKER, DEBE BORRAR EL MENSAJE DE ERROR DE "CAMPO REQUERIDO"
  
  
  
@@ -328,3 +683,8 @@ initRequest()
  
  
  */
+
+var switches = Array.prototype.slice.call(document.querySelectorAll('.switch'));
+switches.forEach(function (el) {
+  var switchery = new Switchery(el,  {color: '#FFE66D', secondaryColor: '#F7FFF7'});
+});

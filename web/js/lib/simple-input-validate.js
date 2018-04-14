@@ -9,25 +9,27 @@ class Input {
 
     const field = this.el
 
-    field.addEventListener('keypress', (event) => {
+    document.querySelectorAll(field).forEach((el) => {
+      el.addEventListener('keypress', (event) => {
 
-      let whichCode = event.which
-      let keyCode = event.keyCode
-      let letter = String.fromCharCode(event.which).toLowerCase()
-      let param = this.param
+        let whichCode = event.which
+        let keyCode = event.keyCode
+        let letter = String.fromCharCode(event.which).toLowerCase()
+        let param = this.param
 
-      let exp = this.expression()
+        let exp = this.expression()
 
-      let valid =
-        -1 !== exp.indexOf(letter) ||
-        9 === keyCode ||
-        37 !== whichCode && 37 === keyCode ||
-        39 === keyCode && 39 !== whichCode ||
-        8 === keyCode ||
-        46 === keyCode && 46 !== whichCode
+        let valid =
+          -1 !== exp.indexOf(letter) ||
+          9 === keyCode ||
+          37 !== whichCode && 37 === keyCode ||
+          39 === keyCode && 39 !== whichCode ||
+          8 === keyCode ||
+          46 === keyCode && 46 !== whichCode
 
-      valid && 161 !== whichCode || event.preventDefault()
+        valid && 161 !== whichCode || event.preventDefault()
 
+      })
     })
   }
   expression() {
