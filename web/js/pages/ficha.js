@@ -130,11 +130,14 @@ const DOMComponents = {
     });
   },
   configComponents() {
-    document.querySelector('#dpFechaNacimiento').setAttribute('readonly', true)
+    // caso especial
     document.querySelector('#cboDepartamentoNacimiento').setAttribute('disabled', true)
-    document.querySelector('#cboProvinciaNacimiento').setAttribute('disabled', true)
-    document.querySelector('#cboDistritoNacimiento').setAttribute('disabled', true)
-    $('#cboProvinciaNacimiento, #cboDistritoNacimiento').selectpicker('refresh')
+    $(document.querySelector('#cboDepartamentoNacimiento')).selectpicker('refresh')
+    // ------------------------
+
+    document.querySelector('#dpFechaNacimiento').setAttribute('readonly', true)
+
+    document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento, #cboProvinciaResidencia, #cboDistritoResidencia').forEach((el) => helpers.defaultSelect(el))
   }
 }
 const httpRequest = {
@@ -239,6 +242,32 @@ const DOMEvents = () => {
       helpers.defaultSelect(document.querySelector('#cboDistritoNacimiento'))
     }
   })
+  document.querySelector('#cboDepartamentoResidencia').addEventListener('change', (e) => {
+    let departamento = parseInt(e.currentTarget.value)
+    if (departamento !== 0) {
+      httpRequest.datosPersonales.listarProvincia(departamento)
+        .then((data) => {
+          let options = helpers.createSelectOptions(data.data.provincias, 'codigoProvincia', 'nombreProvincia')
+          helpers.filteredSelect(document.querySelector('#cboProvinciaResidencia'), options)
+          helpers.defaultSelect(document.querySelector('#cboDistritoResidencia'))
+        })
+    } else {
+      document.querySelectorAll('#cboProvinciaResidencia, #cboDistritoResidencia').forEach((el) => helpers.defaultSelect(el))
+    }
+  })
+  document.querySelector('#cboProvinciaResidencia').addEventListener('change', (e) => {
+    let departamento = parseInt(document.querySelector('#cboDepartamentoResidencia').value)
+    let provincia = parseInt(e.currentTarget.value)
+    if (provincia !== 0) {
+      httpRequest.datosPersonales.listarDistrito(departamento, provincia)
+        .then((data) => {
+          let options = helpers.createSelectOptions(data.data.distritos, 'codigoDistrito', 'nombreDistrito')
+          helpers.filteredSelect(document.querySelector('#cboDistritoResidencia'), options)
+        })
+    } else {
+      helpers.defaultSelect(document.querySelector('#cboDistritoResidencia'))
+    }
+  })
 }
 const initRequest = () => {
   return new Promise((resolve, reject) => {
@@ -271,8 +300,6 @@ const initRequest = () => {
     } catch (err) {
       reject('Error ' + err.message)
     }
-
-
   })
 }
 
@@ -284,20 +311,20 @@ initRequest()
     DOMEvents()
   })
 /*
-  TODO:
-  ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ TODO:
+ ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  */
