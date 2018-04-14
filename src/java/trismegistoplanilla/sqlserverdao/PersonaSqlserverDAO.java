@@ -271,7 +271,7 @@ public class PersonaSqlserverDAO implements PersonaDAO {
               Correo c = new Correo();
               c.setDestino(p.getCorreo());
               c.setAsunto("BIENVENIDO A TRISMEGISTO PLANILLA");
-              c.setMensaje(EmailDesign.correoDesign(CodeVerification, "http://172.16.2.20:8080/trismegisto-planilla/TokenFichaServlet?accion=" + EncryptAction.Encriptar("validarTokenFicha", "TR1SM3G1ST0-PL4N1LL4") + "&id=" + EncryptAction.Encriptar(String.valueOf(codigoTokenFicha), "TR1SM3G1ST0-ID-PL4N1LL4") + "&token=" + token));
+              c.setMensaje(EmailDesign.correoDesign(CodeVerification, "http://localhost:8080/trismegisto-planilla/TokenFichaServlet?accion=" + EncryptAction.Encriptar("validarTokenFicha", "TR1SM3G1ST0-PL4N1LL4") + "&id=" + EncryptAction.Encriptar(String.valueOf(codigoTokenFicha), "TR1SM3G1ST0-ID-PL4N1LL4") + "&token=" + token));
               CorreoSqlserverDAO correo = new CorreoSqlserverDAO();
               if (correo.enviarCorreo(c)) {
                 response.setStatus(true);

@@ -56,10 +56,10 @@ public class SqlserverDAOFactory extends DAOFactory {
     String url = "";
     if (base.equalsIgnoreCase("planillabd")) {
       user = "sa";
-      pwd = "Saco1357$";
+      pwd = "sql";
 //      pwd = "S3rv1d0r";
 //      url = "jdbc:sqlserver://172.16.2.20:1433;databaseName=planillabd";
-      url = "jdbc:sqlserver://172.16.2.118:1433;databaseName=planillabd";
+      url = "jdbc:sqlserver://localhost:1433;databaseName=planillabd";
       try {
         conexion = DriverManager.getConnection(url, user, pwd);
       } catch (SQLException e) {

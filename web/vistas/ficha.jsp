@@ -230,7 +230,7 @@
                             <div class="col-md-3">
                               <div class="form-group">
                                 <label class="display-block text-uppercase text-semibold">Departamento nacimiento<span class="text-danger"> (*)</span></label>
-                                <select id="cboDepartamentoNacimiento" data-size="5" name="cboDepartamentoNacimiento" class="bootstrap-select" data-width="100%" data-live-search="true">
+                                <select id="cboDepartamentoNacimiento" data-size="5" name="cboDepartamentoNacimiento" class="bootstrap-select departamentos" data-width="100%" data-live-search="true">
                                   <option value="0">[SELECCIONAR]</option>
                                 </select>
                               </div>
@@ -282,7 +282,7 @@
                             <div class="col-md-3">
                               <div class="form-group">
                                 <label class="display-block text-uppercase text-semibold">Departamento residencia<span class="text-danger"> (*)</span></label>
-                                <select id="cboDepartamentoResidencia" data-size="5" name="cboDepartamentoResidencia" class="bootstrap-select" data-width="100%" data-live-search="true">
+                                <select id="cboDepartamentoResidencia" data-size="5" name="cboDepartamentoResidencia" class="bootstrap-select departamentos" data-width="100%" data-live-search="true">
                                   <option value="0">[SELECCIONAR]</option>
                                 </select>
                               </div>
@@ -798,6 +798,7 @@
     <script src="../js/pages/general.js" type="text/javascript"></script>
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
+    <script src="../js/lib/simple-input-validate.js" type="text/javascript"></script>
     <script src="../js/pages/ficha.js" type="text/javascript"></script>
 
     <!--libreria maps-->

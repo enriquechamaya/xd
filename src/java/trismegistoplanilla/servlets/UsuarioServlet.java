@@ -36,18 +36,20 @@ public class UsuarioServlet extends HttpServlet {
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String param = request.getParameter("accion");
-    if (null != param) switch (param) {
-      case "validarUsuario":
-        validarUsuario(request, response);
-        break;
-      case "redireccion":
-        redireccion(request, response);
-        break;
-      case "redireccionUsuario":
-        redireccionUsuario(request, response);
-        break;
-      default:
-        break;
+    if (null != param) {
+      switch (param) {
+        case "validarUsuario":
+          validarUsuario(request, response);
+          break;
+        case "redireccion":
+          redireccion(request, response);
+          break;
+        case "redireccionUsuario":
+          redireccionUsuario(request, response);
+          break;
+        default:
+          break;
+      }
     }
   }
 
@@ -118,7 +120,7 @@ public class UsuarioServlet extends HttpServlet {
       session_actual.setAttribute("menuSesionSubCategoria", menuSubCategoria);
 
       JSONObject jsonObjSedeAreaCargo = service.obtenerSedeAreaCargoPorCodigoPlanilla(usuario.getCodigoTrabajador());
-      
+
       if (jsonObjSedeAreaCargo.getBoolean("status")) {
         usuario.setNombreSede(jsonObjSedeAreaCargo.getJSONObject("data").getString("nombreSede"));
         usuario.setNombreArea(jsonObjSedeAreaCargo.getJSONObject("data").getString("nombreArea"));
@@ -128,7 +130,6 @@ public class UsuarioServlet extends HttpServlet {
       session_actual.setAttribute("usuario", usuario);
       session_actual.setMaxInactiveInterval(10 * 60 * 60);// 10 horas
 
-      
       responseJson.put("status", true);
     }
 
