@@ -335,7 +335,7 @@
             <!--DATOS FAMILIARES-->
             <div class="row">
               <div class="col-md-12">
-                <form action="#" name="formDatosFamiliares" id="formDatosFamiliares">
+                <form action="#" method="POST" name="formDatosFamiliares" id="formDatosFamiliares">
                   <div class="row">
                     <div class="col-md-10 col-md-offset-1">
                       <div class="panel so-card-4">
@@ -599,9 +599,9 @@
                             <div class="form-group tp-fix-switch">
                               <label class="checkbox-inline checkbox-switchery checkbox-right">
                                 <input type="checkbox" class="switch" id="chkExperienciaLaboral"  name="chkExperienciaLaboral">
-                                <span class="text-semibold text-uppercase tp-info-experiencia-laboral">¿Tiene experiencia laboral?</span>
+                                <span class="text-bold text-uppercase tp-info-experiencia-laboral">¿Tiene experiencia laboral?</span>
                               </label>
-                              <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-semibold text-uppercase tp-info-experiencia-laboral">NO</span>
+                              <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-bold text-uppercase tp-info-experiencia-laboral">NO</span>
                             </div>
                           </div>
                         </div>
@@ -698,9 +698,9 @@
                           <div class="form-group tp-fix-switch">
                             <label class="checkbox-inline checkbox-switchery checkbox-right">
                               <input type="checkbox" class="switch" checked="checked" id="chkFondoPension"  name="chkFondoPension" checked>
-                              <span id="textChkExperienciaLaboral" class="text-semibold text-uppercase tp-info-experiencia-laboral">¿Está inscrito en un sistema pensionario?</span>
+                              <span class="text-bold text-uppercase tp-info-experiencia-laboral">¿Está inscrito en un sistema pensionario?</span>
                             </label>
-                            <span id="textChkExperienciaLaboral" style="margin-left: 8px;" class="text-semibold text-uppercase tp-info-experiencia-laboral">SI</span>
+                            <span id="textChkRegimenPensionario" style="margin-left: 8px;" class="text-bold text-uppercase tp-info-experiencia-laboral">SI</span>
                           </div>
                         </div>
                       </div>

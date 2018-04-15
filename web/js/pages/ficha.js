@@ -1,4 +1,11 @@
 "use strict";
+// globals
+let objFamiliar = [], objExperienciaLaboral = [], objFormacionAcademica = []
+let codigoUbigeoNacimiento = 0, codigoUbigeoResidencia = 0
+let flagExperienciaLaboral = false, flagRegimenPensionario = true
+
+const getNode = node => document.querySelector(node)
+const getNodeAll = nodeList => document.querySelectorAll(nodeList)
 const helpers = {
   defaultSelect(el) {
     el.setAttribute('disabled', true)
@@ -38,6 +45,38 @@ const helpers = {
         }
       })
     })
+  },
+  randomId() {
+    let S4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+  },
+  validateValueFromArray(value, array, x_value) {
+    for (let i = 0; i < array.length; i++) {
+      if (value === array[i][x_value]) {
+        return true;
+      }
+    }
+    return false;
+  },
+  dateLessThan(str, str2) {
+    str2 = str2 || new Date()
+    if (str2 instanceof Date) {
+      let anio = str2.getFullYear()
+      let mes = str2.getMonth() + 1
+      let dia = str2.getDate()
+      str2 = `${dia}/${mes}/${anio}`
+    }
+    if (helpers.toDate(str) > helpers.toDate(str2)) {
+      return false
+    }
+    return true
+  },
+  toDate(str) {
+    let parts = str.split("/");
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+  },
+  addObjToDataTable(element, obj) {
+    $(getNode(element)).DataTable().row.add(obj).draw()
   }
 }
 const DOMComponents = {
@@ -135,16 +174,16 @@ const DOMComponents = {
   },
   configComponents() {
 
-    document.querySelector('#cboDepartamentoNacimiento').setAttribute('disabled', true)
-    $(document.querySelector('#cboDepartamentoNacimiento')).selectpicker('refresh')
-    document.querySelectorAll('#dpFechaNacimiento, #dpFechaNacimientoFamiliar, #dpFechaInicioFormacionAcademica, #dpFechaFinFormacionAcademica, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral')
+    getNode('#cboDepartamentoNacimiento').setAttribute('disabled', true)
+    $(getNode('#cboDepartamentoNacimiento')).selectpicker('refresh')
+    getNodeAll('#dpFechaNacimiento, #dpFechaNacimientoFamiliar, #dpFechaInicioFormacionAcademica, #dpFechaFinFormacionAcademica, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral')
       .forEach((el) => {
         el.setAttribute('readonly', true)
         el.style.cursor = 'pointer'
       })
-    document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento, #cboProvinciaResidencia, #cboDistritoResidencia, #cboEstadoEstudioFormacionAcademica')
+    getNodeAll('#cboProvinciaNacimiento, #cboDistritoNacimiento, #cboProvinciaResidencia, #cboDistritoResidencia, #cboEstadoEstudioFormacionAcademica')
       .forEach((el) => helpers.defaultSelect(el))
-    document.querySelectorAll('#txtNumeroDocumentoFamiliar, #txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
+    getNodeAll('#txtNumeroDocumentoFamiliar, #txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
       .forEach((el) => el.setAttribute('disabled', true))
   }
 }
@@ -286,91 +325,97 @@ const httpRequest = {
 }
 const DOMEvents = () => {
   // datos personales
-  document.querySelector('#cboNacionalidad').addEventListener('change', (e) => {
+  getNode('#cboNacionalidad').addEventListener('change', (e) => {
     let nacionalidad = parseInt(e.currentTarget.value)
     if (nacionalidad === 144) {
-      document.querySelector('#cboDepartamentoNacimiento').removeAttribute('disabled')
+      getNode('#cboDepartamentoNacimiento').removeAttribute('disabled')
       $('#cboDepartamentoNacimiento').selectpicker('refresh')
     } else {
-      document.querySelector('#cboDepartamentoNacimiento').selectedIndex = 0
-      document.querySelector('#cboDepartamentoNacimiento').setAttribute('disabled', true)
-      $(document.querySelector('#cboDepartamentoNacimiento')).selectpicker('refresh')
-      document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento').forEach((el) => helpers.defaultSelect(el))
+      getNode('#cboDepartamentoNacimiento').selectedIndex = 0
+      getNode('#cboDepartamentoNacimiento').setAttribute('disabled', true)
+      $(getNode('#cboDepartamentoNacimiento')).selectpicker('refresh')
+      getNodeAll('#cboProvinciaNacimiento, #cboDistritoNacimiento').forEach((el) => helpers.defaultSelect(el))
     }
   })
-  document.querySelector('#cboDepartamentoNacimiento').addEventListener('change', (e) => {
+  getNode('#cboDepartamentoNacimiento').addEventListener('change', (e) => {
     let departamento = parseInt(e.currentTarget.value)
     if (departamento !== 0) {
       httpRequest.datosPersonales.listarProvincia(departamento)
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.provincias, 'codigoProvincia', 'nombreProvincia')
-          helpers.filteredSelect(document.querySelector('#cboProvinciaNacimiento'), options)
-          helpers.defaultSelect(document.querySelector('#cboDistritoNacimiento'))
+          helpers.filteredSelect(getNode('#cboProvinciaNacimiento'), options)
+          helpers.defaultSelect(getNode('#cboDistritoNacimiento'))
         })
     } else {
-      document.querySelectorAll('#cboProvinciaNacimiento, #cboDistritoNacimiento').forEach((el) => helpers.defaultSelect(el))
+      getNodeAll('#cboProvinciaNacimiento, #cboDistritoNacimiento').forEach((el) => helpers.defaultSelect(el))
     }
   })
-  document.querySelector('#cboProvinciaNacimiento').addEventListener('change', (e) => {
-    let departamento = parseInt(document.querySelector('#cboDepartamentoNacimiento').value)
+  getNode('#cboProvinciaNacimiento').addEventListener('change', (e) => {
+    let departamento = parseInt(getNode('#cboDepartamentoNacimiento').value)
     let provincia = parseInt(e.currentTarget.value)
     if (provincia !== 0) {
       httpRequest.datosPersonales.listarDistrito(departamento, provincia)
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.distritos, 'codigoDistrito', 'nombreDistrito')
-          helpers.filteredSelect(document.querySelector('#cboDistritoNacimiento'), options)
+          helpers.filteredSelect(getNode('#cboDistritoNacimiento'), options)
         })
     } else {
-      helpers.defaultSelect(document.querySelector('#cboDistritoNacimiento'))
+      helpers.defaultSelect(getNode('#cboDistritoNacimiento'))
     }
   })
-  document.querySelector('#cboDepartamentoResidencia').addEventListener('change', (e) => {
+  getNode('#cboDepartamentoResidencia').addEventListener('change', (e) => {
     let departamento = parseInt(e.currentTarget.value)
     if (departamento !== 0) {
       httpRequest.datosPersonales.listarProvincia(departamento)
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.provincias, 'codigoProvincia', 'nombreProvincia')
-          helpers.filteredSelect(document.querySelector('#cboProvinciaResidencia'), options)
-          helpers.defaultSelect(document.querySelector('#cboDistritoResidencia'))
+          helpers.filteredSelect(getNode('#cboProvinciaResidencia'), options)
+          helpers.defaultSelect(getNode('#cboDistritoResidencia'))
         })
     } else {
-      document.querySelectorAll('#cboProvinciaResidencia, #cboDistritoResidencia').forEach((el) => helpers.defaultSelect(el))
+      getNodeAll('#cboProvinciaResidencia, #cboDistritoResidencia').forEach((el) => helpers.defaultSelect(el))
     }
   })
-  document.querySelector('#cboProvinciaResidencia').addEventListener('change', (e) => {
-    let departamento = parseInt(document.querySelector('#cboDepartamentoResidencia').value)
+  getNode('#cboProvinciaResidencia').addEventListener('change', (e) => {
+    let departamento = parseInt(getNode('#cboDepartamentoResidencia').value)
     let provincia = parseInt(e.currentTarget.value)
     if (provincia !== 0) {
       httpRequest.datosPersonales.listarDistrito(departamento, provincia)
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.distritos, 'codigoDistrito', 'nombreDistrito')
-          helpers.filteredSelect(document.querySelector('#cboDistritoResidencia'), options)
+          helpers.filteredSelect(getNode('#cboDistritoResidencia'), options)
         })
     } else {
-      helpers.defaultSelect(document.querySelector('#cboDistritoResidencia'))
+      helpers.defaultSelect(getNode('#cboDistritoResidencia'))
     }
   })
 
   // experiencia laboral
-  document.querySelector('#chkExperienciaLaboral').addEventListener('click', (e) => {
-    let chkExperienciaLaboral = document.querySelector('#chkExperienciaLaboral')
+  getNode('#chkExperienciaLaboral').addEventListener('click', (e) => {
+    let chkExperienciaLaboral = getNode('#chkExperienciaLaboral')
     if (chkExperienciaLaboral.checked) {
-      document.querySelector('#textChkExperienciaLaboral').innerHTML = 'SI&nbsp;&nbsp;'
-      document.querySelectorAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral')
+      getNode('#textChkExperienciaLaboral').innerHTML = 'SI&nbsp;&nbsp;'
+      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
         .forEach((el) => {
           el.removeAttribute('disabled')
         })
+      flagExperienciaLaboral = true
     } else {
-      document.querySelector('#textChkExperienciaLaboral').innerHTML = 'NO'
+      getNode('#textChkExperienciaLaboral').innerHTML = 'NO'
+      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
+        .forEach((el) => {
+          el.setAttribute('disabled', true)
+        })
+      flagExperienciaLaboral = false
     }
   })
 
   // datos familiares
-  document.querySelector('#cbotipoDocumentoFamiliar').addEventListener('change', (e) => {
+  getNode('#cbotipoDocumentoFamiliar').addEventListener('change', (e) => {
     let tipoDocumento = parseInt(e.currentTarget.value)
     if (tipoDocumento !== 0) {
-      document.querySelector('#txtNumeroDocumentoFamiliar').removeAttribute('disabled')
-      document.querySelector('#txtNumeroDocumentoFamiliar').value = ''
+      getNode('#txtNumeroDocumentoFamiliar').removeAttribute('disabled')
+      getNode('#txtNumeroDocumentoFamiliar').value = ''
       httpRequest.datosFamiliares.obtenerConfiguracionTipoDocumento(tipoDocumento)
         .then((data) => {
           if (data.status) {
@@ -383,31 +428,46 @@ const DOMEvents = () => {
           }
         })
         .then((configTipoDocumento) => {
-          document.querySelector('#txtNumeroDocumentoFamiliar').setAttribute('maxlength', configTipoDocumento.longitud)
+          getNode('#txtNumeroDocumentoFamiliar').setAttribute('maxlength', configTipoDocumento.longitud)
+          getNode('#txtNumeroDocumentoFamiliar').setAttribute('minlength', configTipoDocumento.longitud)
+          getNode('#txtNumeroDocumentoFamiliar').setAttribute('entrada', configTipoDocumento.tipoEntrada)
+
           if (configTipoDocumento.tipoEntrada === 'N') {
             new Input({el: '#txtNumeroDocumentoFamiliar', param: 'numbers'}).validate()
           } else {
             new Input({el: '#txtNumeroDocumentoFamiliar', param: 'alphanumeric'}).validate()
           }
-          document.querySelector('#txtNumeroDocumentoFamiliar').focus()
+          getNode('#txtNumeroDocumentoFamiliar').focus()
         })
     } else {
-      document.querySelector('#txtNumeroDocumentoFamiliar').setAttribute('disabled', true)
-      document.querySelector('#txtNumeroDocumentoFamiliar').value = ''
+      getNode('#txtNumeroDocumentoFamiliar').setAttribute('disabled', true)
+      getNode('#txtNumeroDocumentoFamiliar').value = ''
     }
   })
 
   // formacion academica
-  document.querySelector('#cboGradoEstudioFormacionAcademica').addEventListener('change', (e) => {
+  getNode('#cboGradoEstudioFormacionAcademica').addEventListener('change', (e) => {
     let gradoEstudio = parseInt(e.currentTarget.value)
     if (gradoEstudio !== 0) {
       httpRequest.datosFormacionAcademica.listarEstadoEstudio(gradoEstudio)
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.estadoestudio, 'codigoEstadoEstudio', 'nombre')
-          helpers.filteredSelect(document.querySelector('#cboEstadoEstudioFormacionAcademica'), options)
+          helpers.filteredSelect(getNode('#cboEstadoEstudioFormacionAcademica'), options)
         })
     } else {
-      helpers.defaultSelect(document.querySelector('#cboEstadoEstudioFormacionAcademica'))
+      helpers.defaultSelect(getNode('#cboEstadoEstudioFormacionAcademica'))
+    }
+  })
+
+  // regimen pensionario
+  getNode('#chkFondoPension').addEventListener('change', (e) => {
+    let chkRegimenPensionario = getNode('#chkFondoPension')
+    if (chkRegimenPensionario.checked) {
+      getNode('#textChkRegimenPensionario').innerHTML = 'SI&nbsp;&nbsp;'
+      flagRegimenPensionario = true
+    } else {
+      getNode('#textChkRegimenPensionario').innerHTML = 'NO'
+      flagRegimenPensionario = false
     }
   })
 
@@ -418,7 +478,7 @@ const initRequest = () => {
       httpRequest.datosPersonales.listarEstadoCivil()
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.EstadosCiviles, 'codigoEstadoCivil', 'nombre')
-          helpers.filteredSelect(document.querySelector('#cboEstadoCivil'), options)
+          helpers.filteredSelect(getNode('#cboEstadoCivil'), options)
         })
       httpRequest.datosPersonales.listarNacionalidad()
         .then((data) => {
@@ -427,30 +487,30 @@ const initRequest = () => {
           for (let i in nacionalidad) {
             cboNacionalidad += `<option value="${nacionalidad[i].codigoNacionalidad}" data-content="${nacionalidad[i].gentilicio} <img class='tp-countrie-icon' src='../img/countries/${nacionalidad[i].iso}.svg'"></option>`;
           }
-          helpers.filteredSelect(document.querySelector('#cboNacionalidad'), cboNacionalidad)
+          helpers.filteredSelect(getNode('#cboNacionalidad'), cboNacionalidad)
         })
       httpRequest.datosPersonales.listarDepartamentos()
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.departamentos, 'codigoDepartamento', 'nombreDepartamento')
-          helpers.filteredSelect(document.querySelector('#cboDepartamentoResidencia'), options)
-          document.querySelector('#cboDepartamentoNacimiento').innerHTML = options
-          document.querySelector('#cboDepartamentoNacimiento').setAttribute('disabled', true)
-          $(document.querySelector('#cboDepartamentoNacimiento')).selectpicker('refresh')
+          helpers.filteredSelect(getNode('#cboDepartamentoResidencia'), options)
+          getNode('#cboDepartamentoNacimiento').innerHTML = options
+          getNode('#cboDepartamentoNacimiento').setAttribute('disabled', true)
+          $(getNode('#cboDepartamentoNacimiento')).selectpicker('refresh')
         })
       httpRequest.datosFamiliares.listarParentesco()
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.parentescos, 'codigoParentesco', 'nombre')
-          helpers.filteredSelect(document.querySelector('#cboParentescoFamiliar'), options)
+          helpers.filteredSelect(getNode('#cboParentescoFamiliar'), options)
         })
       httpRequest.datosFamiliares.listarTipoDocumento()
         .then((data) => {
           let options = helpers.createSelectOptions(data.data.tipodocumentos, 'codigoTipoDocumento', 'descripcionCorta')
-          helpers.filteredSelect(document.querySelector('#cbotipoDocumentoFamiliar'), options)
+          helpers.filteredSelect(getNode('#cbotipoDocumentoFamiliar'), options)
         })
       httpRequest.datosFormacionAcademica.listarGradoEstudio().
         then((data) => {
           let options = helpers.createSelectOptions(data.data.nivelestudio, 'codigoNivelEstudio', 'nombre')
-          helpers.filteredSelect(document.querySelector('#cboGradoEstudioFormacionAcademica'), options)
+          helpers.filteredSelect(getNode('#cboGradoEstudioFormacionAcademica'), options)
         })
       httpRequest.datosRegimenPensionario.listarRegimenPensionario()
         .then((data) => {
@@ -467,8 +527,8 @@ const initRequest = () => {
                 </div>        
                 `;
             }
-            document.querySelector('#divFondoPension').innerHTML = rowFondoPension
-            document.querySelector('#rdAFP').setAttribute('required', true)
+            getNode('#divFondoPension').innerHTML = rowFondoPension
+            getNode('#rdAFP').setAttribute('required', true)
             $(".styled, .multiselect-container input").uniform({
               radioClass: 'choice'
             });
@@ -502,141 +562,141 @@ const formsValidation = {
   },
   datosPersonales: {
     rules() {
-      $(document.querySelector('#txtNumeroRUC')).rules('add', {
+      $(getNode('#txtNumeroRUC')).rules('add', {
         number: true,
         minlength: 11,
         maxlength: 11
       })
-      $(document.querySelector('#txtApellidoPaterno')).rules('add', {
+      $(getNode('#txtApellidoPaterno')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#txtApellidoMaterno')).rules('add', {
+      $(getNode('#txtApellidoMaterno')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#txtNombre')).rules('add', {
+      $(getNode('#txtNombre')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#cboSexo')).rules('add', {
+      $(getNode('#cboSexo')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboEstadoCivil')).rules('add', {
+      $(getNode('#cboEstadoCivil')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#dpFechaNacimiento')).rules('add', {
+      $(getNode('#dpFechaNacimiento')).rules('add', {
         required: true,
         dateonly: true
       })
-      $(document.querySelector('#cboNacionalidad')).rules('add', {
+      $(getNode('#cboNacionalidad')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboDepartamentoNacimiento')).rules('add', {
+      $(getNode('#cboDepartamentoNacimiento')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboProvinciaNacimiento')).rules('add', {
+      $(getNode('#cboProvinciaNacimiento')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboDistritoNacimiento')).rules('add', {
+      $(getNode('#cboDistritoNacimiento')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#txtDireccionDocumento')).rules('add', {
+      $(getNode('#txtDireccionDocumento')).rules('add', {
         required: true
       })
-      $(document.querySelector('#txtTelefonoFijo')).rules('add', {
+      $(getNode('#txtTelefonoFijo')).rules('add', {
         number: true
       })
-      $(document.querySelector('#txtTelefonoMovil')).rules('add', {
+      $(getNode('#txtTelefonoMovil')).rules('add', {
         number: true
       })
-      $(document.querySelector('#txtCorreoElectronico')).rules('add', {
+      $(getNode('#txtCorreoElectronico')).rules('add', {
         required: true,
         email: true
       })
-      $(document.querySelector('#cboDepartamentoResidencia')).rules('add', {
+      $(getNode('#cboDepartamentoResidencia')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboProvinciaResidencia')).rules('add', {
+      $(getNode('#cboProvinciaResidencia')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboDistritoResidencia')).rules('add', {
+      $(getNode('#cboDistritoResidencia')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#txtDireccionResidencia')).rules('add', {
+      $(getNode('#txtDireccionResidencia')).rules('add', {
         required: true
       })
-      $(document.querySelector('#flImage')).rules('add', {
+      $(getNode('#flImage')).rules('add', {
         required: true,
         accept: 'image/png, image/jpeg, image/jpg'
       })
     },
     formChangeListener() {
-      document.querySelector('#formDatosPersonales').addEventListener('change', (e) => {
+      getNode('#formDatosPersonales').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
         window.localStorage.setItem('jsonFormDatosPersonales', JSON.stringify({
-          ruc: document.querySelector('#txtNumeroRUC').value,
-          apellidoPaterno: document.querySelector('#txtApellidoPaterno').value,
-          apellidoMaterno: document.querySelector('#txtApellidoMaterno').value,
-          nombre: document.querySelector('#txtNombre').value,
-          sexo: document.querySelector('#cboSexo').value,
-          codigoEstadoCivil: document.querySelector('#cboEstadoCivil').value,
-          fechaNacimiento: document.querySelector('#dpFechaNacimiento').value,
-          codigoNacionalidad: document.querySelector('#cboNacionalidad').value,
-          codigoDepartamentoNacimiento: document.querySelector('#cboDepartamentoNacimiento').value,
-          codigoProvinciaNacimiento: document.querySelector('#cboProvinciaNacimiento').value,
-          codigoDistritoNacimiento: document.querySelector('#cboDistritoNacimiento').value,
-          direccionDocumento: document.querySelector('#txtDireccionDocumento').value,
-          telefonoFijo: document.querySelector('#txtTelefonoFijo').value,
-          telefonoMovil: document.querySelector('#txtTelefonoMovil').value,
-          correo: document.querySelector('#txtCorreoElectronico').value,
-          codigoDepartamentoResidencia: document.querySelector('#cboDepartamentoResidencia').value,
-          codigoProvinciaResidencia: document.querySelector('#cboProvinciaResidencia').value,
-          codigoDistritoResidencia: document.querySelector('#cboDistritoResidencia').value,
-          direccionResidencia: document.querySelector('#txtDireccionResidencia').value,
-          latitudResidencia: document.querySelector('#latitudResidencia').value,
-          longitudResidencia: document.querySelector('#longitudResidencia').value
+          ruc: getNode('#txtNumeroRUC').value,
+          apellidoPaterno: getNode('#txtApellidoPaterno').value,
+          apellidoMaterno: getNode('#txtApellidoMaterno').value,
+          nombre: getNode('#txtNombre').value,
+          sexo: getNode('#cboSexo').value,
+          codigoEstadoCivil: getNode('#cboEstadoCivil').value,
+          fechaNacimiento: getNode('#dpFechaNacimiento').value,
+          codigoNacionalidad: getNode('#cboNacionalidad').value,
+          codigoDepartamentoNacimiento: getNode('#cboDepartamentoNacimiento').value,
+          codigoProvinciaNacimiento: getNode('#cboProvinciaNacimiento').value,
+          codigoDistritoNacimiento: getNode('#cboDistritoNacimiento').value,
+          direccionDocumento: getNode('#txtDireccionDocumento').value,
+          telefonoFijo: getNode('#txtTelefonoFijo').value,
+          telefonoMovil: getNode('#txtTelefonoMovil').value,
+          correo: getNode('#txtCorreoElectronico').value,
+          codigoDepartamentoResidencia: getNode('#cboDepartamentoResidencia').value,
+          codigoProvinciaResidencia: getNode('#cboProvinciaResidencia').value,
+          codigoDistritoResidencia: getNode('#cboDistritoResidencia').value,
+          direccionResidencia: getNode('#txtDireccionResidencia').value,
+          latitudResidencia: getNode('#latitudResidencia').value,
+          longitudResidencia: getNode('#longitudResidencia').value
         }))
       })
     }
   },
   datosFamiliares: {
     rules() {
-      $(document.querySelector('#cboParentescoFamiliar')).rules('add', {
+      $(getNode('#cboParentescoFamiliar')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#txtApellidoPaternoFamiliar')).rules('add', {
+      $(getNode('#txtApellidoPaternoFamiliar')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#txtApellidoMaternoFamiliar')).rules('add', {
+      $(getNode('#txtApellidoMaternoFamiliar')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#txtNombreFamiliar')).rules('add', {
+      $(getNode('#txtNombreFamiliar')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#dpFechaNacimientoFamiliar')).rules('add', {
+      $(getNode('#dpFechaNacimientoFamiliar')).rules('add', {
         required: true,
         dateonly: true
       })
-      $(document.querySelector('#cbotipoDocumentoFamiliar')).rules('add', {
+      $(getNode('#cbotipoDocumentoFamiliar')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#txtNumeroDocumentoFamiliar')).rules('add', {
+      $(getNode('#txtNumeroDocumentoFamiliar')).rules('add', {
         required: true
       })
-      $(document.querySelector('#cboSexoFamiliar')).rules('add', {
+      $(getNode('#cboSexoFamiliar')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#txtTelefonoFamiliar')).rules('add', {
+      $(getNode('#txtTelefonoFamiliar')).rules('add', {
         number: true
       })
     },
     formChangeListener() {
-      document.querySelector('#formDatosFamiliares').addEventListener('change', (e) => {
+      getNode('#formDatosFamiliares').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
       })
@@ -644,33 +704,33 @@ const formsValidation = {
   },
   datosFormacionAcademica: {
     rules() {
-      $(document.querySelector('#cboGradoEstudioFormacionAcademica')).rules('add', {
+      $(getNode('#cboGradoEstudioFormacionAcademica')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboEstadoEstudioFormacionAcademica')).rules('add', {
+      $(getNode('#cboEstadoEstudioFormacionAcademica')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#cboPosicionInstitucion')).rules('add', {
+      $(getNode('#cboPosicionInstitucion')).rules('add', {
         valueNotEquals: '0'
       })
-      $(document.querySelector('#txtCentroEstudiosFormacionAcademica')).rules('add', {
+      $(getNode('#txtCentroEstudiosFormacionAcademica')).rules('add', {
         required: true
       })
-      $(document.querySelector('#txtCarreraProfesional')).rules('add', {
+      $(getNode('#txtCarreraProfesional')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#dpFechaInicioFormacionAcademica')).rules('add', {
+      $(getNode('#dpFechaInicioFormacionAcademica')).rules('add', {
         required: true,
         dateonly: true
       })
-      $(document.querySelector('#dpFechaFinFormacionAcademica')).rules('add', {
+      $(getNode('#dpFechaFinFormacionAcademica')).rules('add', {
         required: true,
         dateonly: true
       })
     },
     formChangeListener() {
-      document.querySelector('#formFormacionAcademica').addEventListener('change', (e) => {
+      getNode('#formFormacionAcademica').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
       })
@@ -678,28 +738,28 @@ const formsValidation = {
   },
   datosExperienciaLaboral: {
     rules() {
-      $(document.querySelector('#txtEmpresaExperienciaLaboral')).rules('add', {
+      $(getNode('#txtEmpresaExperienciaLaboral')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#txtCargoExperienciaLaboral')).rules('add', {
+      $(getNode('#txtCargoExperienciaLaboral')).rules('add', {
         required: true,
         lettersonly: true
       })
-      $(document.querySelector('#dpFechaInicioExperienciaLaboral')).rules('add', {
+      $(getNode('#dpFechaInicioExperienciaLaboral')).rules('add', {
         required: true,
         dateonly: true
       })
-      $(document.querySelector('#dpFechaFinExperienciaLaboral')).rules('add', {
+      $(getNode('#dpFechaFinExperienciaLaboral')).rules('add', {
         required: true,
         dateonly: true
       })
-      $(document.querySelector('#txtTelefonoExperienciaLaboral')).rules('add', {
+      $(getNode('#txtTelefonoExperienciaLaboral')).rules('add', {
         number: true
       })
     },
     formChangeListener() {
-      document.querySelector('#formExperienciaLaboral').addEventListener('change', (e) => {
+      getNode('#formExperienciaLaboral').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
       })
@@ -707,29 +767,194 @@ const formsValidation = {
   },
   datosRegimenPensionario: {
     rules() {
-      $(document.querySelector('#rdFondoPension')).rules('add', {
+      $(getNode('#rdFondoPension')).rules('add', {
         required: true
       })
     },
     formChangeListener() {
-      document.querySelector('#formFondoPension').addEventListener('change', (e) => {
+      getNode('#formFondoPension').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
       })
     }
   },
   initValidateForm() {
-    document.querySelectorAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
+    getNodeAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
       .forEach((el) => $(el).validate())
   }
 }
 const getValuesFromLocalStorage = {
 
 }
-// globals
-let objFamiliar = [], objExperienciaLaboral = [], objFormacionAcademica = []
-let codigoUbigeoNacimiento = 0, codigoUbigeoResidencia = 0
-let flagExperienciaLaboral = false, flagRegimenPensionario = true
+const Objetos = {
+  init() {
+    this.datosFamiliares.init()
+  },
+  datosFamiliares: {
+    init() {
+      this.agregar()
+      this.listar()
+      this.eliminar()
+    },
+    validar() {
+      let obj = {}
+      obj = {
+        id: helpers.randomId(),
+        codigoParentesco: parseInt(getNode('#cboParentescoFamiliar').value),
+        nombreParentesco: getNode('#cboParentescoFamiliar').options[getNode('#cboParentescoFamiliar').selectedIndex].text.toUpperCase(),
+        apellidoPaterno: getNode('#txtApellidoPaternoFamiliar').value.toUpperCase().trim(),
+        apellidoMaterno: getNode('#txtApellidoMaternoFamiliar').value.toUpperCase().trim(),
+        nombre: getNode('#txtNombreFamiliar').value.toUpperCase().trim(),
+        fechaNacimiento: getNode('#dpFechaNacimientoFamiliar').value.trim(),
+        codigoTipoDocumento: parseInt(getNode('#cbotipoDocumentoFamiliar').value),
+        nombreTipoDocumento: getNode('#cbotipoDocumentoFamiliar').options[getNode('#cbotipoDocumentoFamiliar').selectedIndex].text.toUpperCase(),
+        longitud: parseInt(getNode('#txtNumeroDocumentoFamiliar').getAttribute('maxlength')),
+        tipoEntrada: getNode('#txtNumeroDocumentoFamiliar').getAttribute('entrada'),
+        numeroDocumento: getNode('#txtNumeroDocumentoFamiliar').value.trim(),
+        sexo: getNode('#cboSexoFamiliar').value,
+        telefono: getNode('#txtTelefonoFamiliar').value.trim()
+      }
+
+      if (helpers.validateValueFromArray(obj.numeroDocumento, objFamiliar, 'numeroDocumento')) {
+        return obj = {
+          status: false,
+          message: 'El número de documento es repetido.'
+        }
+      }
+
+      if (obj.sexo !== 'M' && obj.sexo !== 'F') {
+        return obj = {
+          status: false,
+          message: 'No se encontró el sexo registrado.'
+        }
+      }
+
+      if (!helpers.dateLessThan(obj.fechaNacimiento)) {
+        return obj = {
+          status: false,
+          message: 'La fecha de nacimiento no puede ser mayor a la actual.'
+        }
+      }
+
+      if (obj.telefono.length !== 7 && obj.telefono.length !== 9 && obj.telefono.length !== 0) {
+        return obj = {
+          status: false,
+          message: 'Verifique el número de teléfono ingresado.'
+        }
+      }
+
+      if (obj.numeroDocumento === getNode('#lblNumeroDocumento').innerText) {
+        return obj = {
+          status: false,
+          message: 'Cuidado con quien agregas como familiar.'
+        }
+      }
+
+      obj.status = true
+      obj.message = 'Familiar agregado!'
+      return obj
+
+    },
+    agregar() {
+      getNode('#btnAgregarFamiliar').addEventListener('click', (e) => {
+        let obj = this.validar()
+        if ($(getNode('#formDatosFamiliares')).valid()) {
+          if (obj.status) {
+            delete obj["status"]
+            objFamiliar.unshift(obj)
+            localStorage.setItem('objFamiliar', JSON.stringify(objFamiliar))
+            helpers.addObjToDataTable('#tblFamiliar', obj)
+            if (obj.codigoParentesco === 1 || obj.codigoParentesco === 2) {
+              getNode(`#cboParentescoFamiliar option[value='${obj.codigoParentesco}']`).setAttribute('disabled', true)
+              $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
+            }
+            successMessage(obj.message)
+            this.clean()
+          } else {
+            warningMessage(obj.message)
+          }
+        }
+      })
+    },
+    listar() {
+      defaultConfigDataTable()
+      // # , apellidos y nombres, parentesco, fecha de nacimiento, tipo de documento, numero documento,
+      // sexo, telefono, accion
+      let numeroFilas = 0
+      $(getNode('#tblFamiliar')).DataTable({
+        bInfo: false,
+        bPaginate: false,
+        columns: [
+          {
+            data: null,
+            render: (data, type, row) => numeroFilas++
+          },
+          {
+            data: null,
+            render: (data, type, row) => `${data.apellidoPaterno} ${data.apellidoMaterno} ${data.nombre}`
+          },
+          {
+            data: 'nombreParentesco'
+          },
+          {
+            data: 'fechaNacimiento'
+          },
+          {
+            data: 'nombreTipoDocumento'
+          },
+          {
+            data: 'numeroDocumento'
+          },
+          {
+            data: 'sexo',
+            render: (data, type, row) => data === 'M' ? 'MASCULINO' : 'FEMENINO'
+          },
+          {
+            data: 'telefono'
+          },
+          {
+            data: null,
+            render: (data, type, row) => {
+              return `<ul class="icons-list">
+                        <li title="Eliminar" class="text-danger-600">
+                            <a href="#" onclick="return false" class="eliminarFamiliar"><i class="fa fa-trash-o fa-lg"></i></a>
+                        </li>
+                      </ul>`;
+            }
+          }
+        ]
+      })
+    },
+    eliminar() {
+
+    },
+    clean() {
+      getNode('#txtApellidoPaternoFamiliar').value = ''
+      getNode('#txtApellidoMaternoFamiliar').value = ''
+      getNode('#txtNombreFamiliar').value = ''
+      getNode('#dpFechaNacimientoFamiliar').value = ''
+      getNode('#txtNumeroDocumentoFamiliar').value = ''
+      getNode('#txtTelefonoFamiliar').value = ''
+      getNodeAll('#cboParentescoFamiliar, #cbotipoDocumentoFamiliar, #cboSexoFamiliar')
+        .forEach((el) => {
+          el.selectedIndex = 0
+          $(el).selectpicker('refresh')
+        })
+
+    }
+  },
+  formacionAcademica: {
+
+  },
+  experienciaLaboral: {
+
+  },
+  regimenPensionario: {
+
+  }
+}
+
+
 
 DOMComponents.init()
 initRequest()
@@ -737,6 +962,7 @@ initRequest()
     DOMEvents()
   })
 formsValidation.init()
+Objetos.init()
 /*
  TODO:
  1) ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
@@ -756,7 +982,7 @@ formsValidation.init()
  
  */
 
-var switches = Array.prototype.slice.call(document.querySelectorAll('.switch'));
+var switches = Array.prototype.slice.call(getNodeAll('.switch'));
 switches.forEach(function (el) {
   var switchery = new Switchery(el, {color: '#FFE66D', secondaryColor: '#F7FFF7'});
 });
