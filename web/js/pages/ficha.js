@@ -393,26 +393,6 @@ const DOMEvents = () => {
     }
   })
 
-  // experiencia laboral
-  getNode('#chkExperienciaLaboral').addEventListener('click', (e) => {
-    let chkExperienciaLaboral = getNode('#chkExperienciaLaboral')
-    if (chkExperienciaLaboral.checked) {
-      getNode('#textChkExperienciaLaboral').innerHTML = 'SI&nbsp;&nbsp;'
-      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
-        .forEach((el) => {
-          el.removeAttribute('disabled')
-        })
-      flagExperienciaLaboral = true
-    } else {
-      getNode('#textChkExperienciaLaboral').innerHTML = 'NO'
-      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
-        .forEach((el) => {
-          el.setAttribute('disabled', true)
-        })
-      flagExperienciaLaboral = false
-    }
-  })
-
   // datos familiares
   getNode('#cbotipoDocumentoFamiliar').addEventListener('change', (e) => {
     let tipoDocumento = parseInt(e.currentTarget.value)
@@ -447,6 +427,17 @@ const DOMEvents = () => {
       getNode('#txtNumeroDocumentoFamiliar').value = ''
     }
   })
+  getNode('#cboParentescoFamiliar').addEventListener('change', (e) => {
+    let parentesco = parseInt(e.currentTarget.value)
+    if (parentesco === 1 || parentesco === 2) {
+      getNode('#cboSexoFamiliar').value = parentesco === 1 ? 'M' : 'F'
+      getNode('#cboSexoFamiliar').setAttribute('disabled', true)
+    } else {
+      getNode('#cboSexoFamiliar').value = 0
+      getNode('#cboSexoFamiliar').removeAttribute('disabled')
+    }
+    $(getNode('#cboSexoFamiliar')).selectpicker('refresh')
+  })
 
   // formacion academica
   getNode('#cboGradoEstudioFormacionAcademica').addEventListener('change', (e) => {
@@ -459,6 +450,26 @@ const DOMEvents = () => {
         })
     } else {
       helpers.defaultSelect(getNode('#cboEstadoEstudioFormacionAcademica'))
+    }
+  })
+
+  // experiencia laboral
+  getNode('#chkExperienciaLaboral').addEventListener('click', (e) => {
+    let chkExperienciaLaboral = getNode('#chkExperienciaLaboral')
+    if (chkExperienciaLaboral.checked) {
+      getNode('#textChkExperienciaLaboral').innerHTML = 'SI&nbsp;&nbsp;'
+      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
+        .forEach((el) => {
+          el.removeAttribute('disabled')
+        })
+      flagExperienciaLaboral = true
+    } else {
+      getNode('#textChkExperienciaLaboral').innerHTML = 'NO'
+      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
+        .forEach((el) => {
+          el.setAttribute('disabled', true)
+        })
+      flagExperienciaLaboral = false
     }
   })
 
@@ -794,7 +805,7 @@ const getDataFromLocalStorage = {
     if (localStorage.getItem('objFamiliar')) {
       let objJsonFamiliar = JSON.parse(localStorage.getItem('objFamiliar'))
       for (let i = 0; i < objJsonFamiliar.length; i++) {
-        helpers.addObjToDataTable('#formDatosFamiliares', objJsonFamiliar[i])
+        helpers.addObjToDataTable('#tblFamiliar', objJsonFamiliar[i])
         if (objJsonFamiliar[i].codigoParentesco === 1 || objJsonFamiliar[i].codigoParentesco === 2) {
           getNode(`#cboParentescoFamiliar option[value='${objJsonFamiliar[i].codigoParentesco}']`).setAttribute('disabled', true)
           $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
