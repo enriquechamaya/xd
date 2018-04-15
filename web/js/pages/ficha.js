@@ -77,6 +77,9 @@ const helpers = {
   },
   addObjToDataTable(element, obj) {
     $(getNode(element)).DataTable().row.add(obj).draw()
+  },
+  getRow(el, row) {
+    return $(getNode(el)).DataTable().row($(row).parents('tr'))
   }
 }
 const DOMComponents = {
@@ -783,8 +786,23 @@ const formsValidation = {
       .forEach((el) => $(el).validate())
   }
 }
-const getValuesFromLocalStorage = {
-
+const getDataFromLocalStorage = {
+  init() {
+    this.datosFamiliares()
+  },
+  datosFamiliares() {
+    if (localStorage.getItem('objFamiliar')) {
+      let objJsonFamiliar = JSON.parse(localStorage.getItem('objFamiliar'))
+      for (let i = 0; i < objJsonFamiliar.length; i++) {
+        helpers.addObjToDataTable('#formDatosFamiliares', objJsonFamiliar[i])
+        if (objJsonFamiliar[i].codigoParentesco === 1 || objJsonFamiliar[i].codigoParentesco === 2) {
+          getNode(`#cboParentescoFamiliar option[value='${objJsonFamiliar[i].codigoParentesco}']`).setAttribute('disabled', true)
+          $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
+        }
+      }
+      objFamiliar = objJsonFamiliar
+    }
+  }
 }
 const Objetos = {
   init() {
@@ -880,7 +898,7 @@ const Objetos = {
       defaultConfigDataTable()
       // # , apellidos y nombres, parentesco, fecha de nacimiento, tipo de documento, numero documento,
       // sexo, telefono, accion
-      let numeroFilas = 0
+      let numeroFilas = 1
       $(getNode('#tblFamiliar')).DataTable({
         bInfo: false,
         bPaginate: false,
@@ -926,20 +944,47 @@ const Objetos = {
       })
     },
     eliminar() {
-
+      $(getNode('#tblFamiliar tbody')).on('click', '.eliminarFamiliar', (e) => {
+        let fila = helpers.getRow('#tblFamiliar', e.currentTarget)
+        let data = fila.data()
+        $.confirm({
+          icon: 'glyphicon glyphicon-question-sign',
+          theme: 'material',
+          closeIcon: true,
+          animation: 'scale',
+          type: 'dark',
+          title: 'Confirmar',
+          content: `<span class="text-semibold">¿Seguro de eliminar a ${data.nombre} ${data.apellidoPaterno}?</span>`,
+          buttons: {
+            Eliminar: {
+              btnClass: 'btn-success',
+              action: function () {
+                let objJsonFamiliar = removeByKey(objFamiliar, {key: 'id', value: data.id});
+                getNode(`#cboParentescoFamiliar option[value='${data.codigoParentesco}']`).removeAttribute('disabled')
+                $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
+                if (objJsonFamiliar.length === 0) {
+                  localStorage.removeItem('objFamiliar');
+                } else {
+                  localStorage.setItem("objFamiliar", JSON.stringify(objJsonFamiliar));
+                }
+                fila.remove().draw();
+                successMessage("Familiar eliminado");
+              }
+            },
+            Cancelar: {
+              btnClass: 'btn-danger'
+            }
+          }
+        });
+      })
     },
     clean() {
-      getNode('#txtApellidoPaternoFamiliar').value = ''
-      getNode('#txtApellidoMaternoFamiliar').value = ''
-      getNode('#txtNombreFamiliar').value = ''
-      getNode('#dpFechaNacimientoFamiliar').value = ''
-      getNode('#txtNumeroDocumentoFamiliar').value = ''
-      getNode('#txtTelefonoFamiliar').value = ''
-      getNodeAll('#cboParentescoFamiliar, #cbotipoDocumentoFamiliar, #cboSexoFamiliar')
-        .forEach((el) => {
-          el.selectedIndex = 0
-          $(el).selectpicker('refresh')
-        })
+      getNodeAll('#txtApellidoPaternoFamiliar, #txtApellidoMaternoFamiliar, #txtNombreFamiliar, #dpFechaNacimientoFamiliar, #txtNumeroDocumentoFamiliar, #txtTelefonoFamiliar').forEach((el) => el.value = '')
+      getNode('#txtNumeroDocumentoFamiliar').setAttribute('disabled', true)
+      getNodeAll('#cboParentescoFamiliar, #cbotipoDocumentoFamiliar, #cboSexoFamiliar').forEach((el) => {
+        el.selectedIndex = 0
+        $(el).selectpicker('refresh')
+      })
 
     }
   },
@@ -963,6 +1008,9 @@ initRequest()
   })
 formsValidation.init()
 Objetos.init()
+setTimeout(() => {
+  getDataFromLocalStorage.init()
+}, 0)
 /*
  TODO:
  1) ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
