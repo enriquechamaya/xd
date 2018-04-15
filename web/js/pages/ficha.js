@@ -129,10 +129,6 @@ const DOMComponents = {
     new Input({el: '#txtTelefonoExperienciaLaboral', param: 'numbers'}).validate()
   },
   initializePluginComponents() {
-    // radio button
-    $(".styled, .multiselect-container input").uniform({
-      radioClass: 'choice'
-    });
 
     // datepicker settings
     let date = new Date();
@@ -198,12 +194,17 @@ const DOMComponents = {
     getNodeAll('#txtNumeroDocumentoFamiliar, #txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
       .forEach((el) => el.setAttribute('disabled', true))
   },
-  switchery() {
-    let switches = Array.prototype.slice.call(getNodeAll('.switch'));
+  switchery(node) {
+    let switches = Array.prototype.slice.call(getNodeAll(node));
     switches.forEach(function (el) {
       let switchery = new Switchery(el, {color: '#FFE66D', secondaryColor: '#F7FFF7'});
     });
 
+  },
+  radioButton() {
+    $(".styled, .multiselect-container input").uniform({
+      radioClass: 'choice'
+    });
   }
 }
 const httpRequest = {
@@ -263,6 +264,20 @@ const httpRequest = {
           accion: 'listarDistrito',
           codigoDepartamento: codigoDepartamento,
           codigoProvincia: codigoProvincia
+        }
+      })
+    },
+    obtenerUbigeo(codigoDepartamento, codigoProvincia, codigoDistrito) {
+      return helpers.ajaxRequest({
+        url: '../UbigeoServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Obteniendo ubigeo',
+        body: {
+          accion: 'obtenerCodigoUbigeo',
+          codigoDepartamento: codigoDepartamento,
+          codigoProvincia: codigoProvincia,
+          codigoDistrito: codigoDistrito
         }
       })
     }
@@ -359,6 +374,7 @@ const DOMEvents = () => {
   // datos personales
   getNode('#cboNacionalidad').addEventListener('change', (e) => {
     let nacionalidad = parseInt(e.currentTarget.value)
+    codigoUbigeoNacimiento = 0
     if (nacionalidad === 144) {
       getNode('#cboDepartamentoNacimiento').removeAttribute('disabled')
       $('#cboDepartamentoNacimiento').selectpicker('refresh')
@@ -371,6 +387,7 @@ const DOMEvents = () => {
   })
   getNode('#cboDepartamentoNacimiento').addEventListener('change', (e) => {
     let departamento = parseInt(e.currentTarget.value)
+    codigoUbigeoNacimiento = 0
     if (departamento !== 0) {
       httpRequest.datosPersonales.listarProvincia(departamento)
         .then((data) => {
@@ -385,6 +402,7 @@ const DOMEvents = () => {
   getNode('#cboProvinciaNacimiento').addEventListener('change', (e) => {
     let departamento = parseInt(getNode('#cboDepartamentoNacimiento').value)
     let provincia = parseInt(e.currentTarget.value)
+    codigoUbigeoNacimiento = 0
     if (provincia !== 0) {
       httpRequest.datosPersonales.listarDistrito(departamento, provincia)
         .then((data) => {
@@ -395,8 +413,18 @@ const DOMEvents = () => {
       helpers.defaultSelect(getNode('#cboDistritoNacimiento'))
     }
   })
+  getNode('#cboDistritoNacimiento').addEventListener('change', (e) => {
+    let distrito = parseInt(e.currentTarget.value)
+    let provincia = parseInt(getNode('#cboProvinciaNacimiento').value)
+    let departamento = parseInt(getNode('#cboDepartamentoNacimiento').value)
+    httpRequest.datosPersonales.obtenerUbigeo(departamento, provincia, distrito)
+      .then((data) => {
+        codigoUbigeoNacimiento = data.data.getResultedKey
+      })
+  })
   getNode('#cboDepartamentoResidencia').addEventListener('change', (e) => {
     let departamento = parseInt(e.currentTarget.value)
+    codigoUbigeoResidencia = 0
     if (departamento !== 0) {
       httpRequest.datosPersonales.listarProvincia(departamento)
         .then((data) => {
@@ -411,6 +439,7 @@ const DOMEvents = () => {
   getNode('#cboProvinciaResidencia').addEventListener('change', (e) => {
     let departamento = parseInt(getNode('#cboDepartamentoResidencia').value)
     let provincia = parseInt(e.currentTarget.value)
+    codigoUbigeoResidencia = 0
     if (provincia !== 0) {
       httpRequest.datosPersonales.listarDistrito(departamento, provincia)
         .then((data) => {
@@ -420,6 +449,15 @@ const DOMEvents = () => {
     } else {
       helpers.defaultSelect(getNode('#cboDistritoResidencia'))
     }
+  })
+  getNode('#cboDistritoResidencia').addEventListener('change', (e) => {
+    let distrito = parseInt(e.currentTarget.value)
+    let provincia = parseInt(getNode('#cboProvinciaResidencia').value)
+    let departamento = parseInt(getNode('#cboDepartamentoResidencia').value)
+    httpRequest.datosPersonales.obtenerUbigeo(departamento, provincia, distrito)
+      .then((data) => {
+        codigoUbigeoResidencia = data.data.getResultedKey
+      })
   })
 
   // datos familiares
@@ -523,9 +561,11 @@ const DOMEvents = () => {
     let chkRegimenPensionario = getNode('#chkFondoPension')
     if (chkRegimenPensionario.checked) {
       getNode('#textChkRegimenPensionario').innerHTML = 'SI&nbsp;&nbsp;'
+      getNode('.regimenPensionarioTitulo').innerText = 'SELECCIONE EL SISTEMA PENSIONARIO EN EL QUE SE ENCUENTRA ACTUALMENTE'
       flagRegimenPensionario = true
     } else {
       getNode('#textChkRegimenPensionario').innerHTML = 'NO'
+      getNode('.regimenPensionarioTitulo').innerText = 'SELECCIONE EL SISTEMA PENSIONARIO AL QUE DESEA APORTAR'
       flagRegimenPensionario = false
     }
   })
@@ -588,9 +628,6 @@ const initRequest = () => {
             }
             getNode('#divFondoPension').innerHTML = rowFondoPension
             getNode('#rdAFP').setAttribute('required', true)
-            $(".styled, .multiselect-container input").uniform({
-              radioClass: 'choice'
-            });
           }
         })
       resolve('ok')
@@ -694,7 +731,7 @@ const formsValidation = {
       getNode('#formDatosPersonales').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
-        window.localStorage.setItem('jsonFormDatosPersonales', JSON.stringify({
+        localStorage.setItem('objDatosPersonales', JSON.stringify({
           ruc: getNode('#txtNumeroRUC').value,
           apellidoPaterno: getNode('#txtApellidoPaterno').value,
           apellidoMaterno: getNode('#txtApellidoMaterno').value,
@@ -706,6 +743,7 @@ const formsValidation = {
           codigoDepartamentoNacimiento: getNode('#cboDepartamentoNacimiento').value,
           codigoProvinciaNacimiento: getNode('#cboProvinciaNacimiento').value,
           codigoDistritoNacimiento: getNode('#cboDistritoNacimiento').value,
+          codigoUbigeoNacimiento: codigoUbigeoNacimiento,
           direccionDocumento: getNode('#txtDireccionDocumento').value,
           telefonoFijo: getNode('#txtTelefonoFijo').value,
           telefonoMovil: getNode('#txtTelefonoMovil').value,
@@ -713,6 +751,7 @@ const formsValidation = {
           codigoDepartamentoResidencia: getNode('#cboDepartamentoResidencia').value,
           codigoProvinciaResidencia: getNode('#cboProvinciaResidencia').value,
           codigoDistritoResidencia: getNode('#cboDistritoResidencia').value,
+          codigoUbigeoResidencia: codigoUbigeoResidencia,
           direccionResidencia: getNode('#txtDireccionResidencia').value,
           latitudResidencia: getNode('#latitudResidencia').value,
           longitudResidencia: getNode('#longitudResidencia').value
@@ -834,12 +873,51 @@ const formsValidation = {
       getNode('#formFondoPension').addEventListener('change', (e) => {
         $(e.currentTarget).valid()
         this.rules()
+        localStorage.setItem('objRegimenPensionario', JSON.stringify({
+          regimenPensionario: getNode('input[name=rdFondoPension]:checked') === null ? 0 : parseInt(getNode('input[name=rdFondoPension]:checked').value),
+          tieneRegimenPensionario: flagRegimenPensionario,
+          tituloRegimenPensionario: getNode('.regimenPensionarioTitulo').innerText
+        }))
       })
     }
   },
   initValidateForm() {
     getNodeAll('#formDatosPersonales, #formDatosFamiliares, #formFormacionAcademica, #formExperienciaLaboral, #formFondoPension')
       .forEach((el) => $(el).validate())
+  },
+  valid() {
+    if (!$(getNode('#formDatosPersonales')).valid()) {
+      return {
+        status: false,
+        message: 'Ingrese sus datos personales completos, por favor.'
+      }
+    }
+    if (objFamiliar.length === 0) {
+      return {
+        status: false,
+        message: 'Debe ingresar al menos un familiar, por favor.'
+      }
+    }
+    if (objFormacionAcademica.length === 0) {
+      return {
+        status: false,
+        message: 'Debe ingresar al menos una formación académica, por favor.'
+      }
+    }
+    if (flagExperienciaLaboral) {
+      if (objExperienciaLaboral.length === 0) {
+        return {
+          status: false,
+          message: 'Debe ingresar una experiencia laboral si tiene marcado la opción.'
+        }
+      }
+    }
+    if (!$(getNode('#formFondoPension')).valid()) {
+      return {
+        status: false,
+        message: 'Debe escoger un fondo pensionario, por favor.'
+      }
+    }
   }
 }
 const getDataFromLocalStorage = {
@@ -847,6 +925,7 @@ const getDataFromLocalStorage = {
     this.datosFamiliares()
     this.formacionAcademica()
     this.experienciaLaboral()
+    this.regimenPensionario()
   },
   datosFamiliares() {
     if (localStorage.getItem('objFamiliar')) {
@@ -876,20 +955,48 @@ const getDataFromLocalStorage = {
         getNode('#chkExperienciaLaboral').setAttribute('checked', 'checked')
         getNode('#chkExperienciaLaboral').checked = true
         flagExperienciaLaboral = true
-        initSwitch()
+
       }
       for (let obj in objJsonExperienciaLaboral) {
         helpers.addObjToDataTable('#tblExperienciaLaboral', objJsonExperienciaLaboral[obj])
       }
       objExperienciaLaboral = objJsonExperienciaLaboral
     }
+    DOMComponents.switchery('#chkExperienciaLaboral')
+  },
+  regimenPensionario() {
+    if (localStorage.getItem('objRegimenPensionario')) {
+      let objJsonRegimenPensionario = JSON.parse(localStorage.getItem('objRegimenPensionario'))
+      getNode('.regimenPensionarioTitulo').innerText = objJsonRegimenPensionario.tituloRegimenPensionario
+      getNode('#chkFondoPension').checked = objJsonRegimenPensionario.tieneRegimenPensionario
+      getNodeAll('input[name=rdFondoPension]').forEach((el) => {
+        parseInt(el.value) === objJsonRegimenPensionario.regimenPensionario ? el.checked = true : el.checked = false
+      })
+      getNode('#textChkRegimenPensionario').innerText = objJsonRegimenPensionario.tieneRegimenPensionario === true ? 'SI' : 'NO'
+      flagRegimenPensionario = objJsonRegimenPensionario.tieneRegimenPensionario
+    }
+    DOMComponents.radioButton()
+    DOMComponents.switchery('#chkFondoPension')
   }
+
 }
 const Objetos = {
   init() {
     this.datosFamiliares.init()
     this.formacionAcademica.init()
     this.experienciaLaboral.init()
+  },
+  datosPersonales: {
+    init() {
+
+    },
+    validar() {
+      let obj = {}
+
+
+
+      return obj
+    }
   },
   datosFamiliares: {
     init() {
@@ -1354,28 +1461,6 @@ const Objetos = {
       getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral')
         .forEach((el) => el.value = '')
     }
-  },
-  regimenPensionario: {
-    init() {
-      this.agregar()
-      this.listar()
-      this.eliminar()
-    },
-    validar() {
-
-    },
-    agregar() {
-
-    },
-    listar() {
-
-    },
-    eliminar() {
-
-    },
-    clear() {
-
-    }
   }
 }
 
@@ -1397,7 +1482,7 @@ setTimeout(() => {
  1) ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
  2) AL CAMBIAR EL TIPO DE DOCUMENTO DE FAMILIAR, LAS REGLAS DE LOS INPUTS DEBE APLICARSE
  3) CUANDO SE SELECCIONA UN DATEPICKER, DEBE BORRAR EL MENSAJE DE ERROR DE "CAMPO REQUERIDO"
- 
+ 4) CHECKBOX DEBE VALIDAR: SI TRATA DE QUITAR CHECK Y TIENE EXPERIENCIAS REGISTRADAS, NO LE DEBE DEJAR
  
  
  

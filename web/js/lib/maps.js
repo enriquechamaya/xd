@@ -8,10 +8,21 @@ $(document).ready(function () {
 let map, myLatLng, infowindow;
 
 function initMap() {
-  myLatLng = {
-    lat: -12.0262676,
-    lng: -77.1278633
-  };
+  if (localStorage.getItem('objDatosPersonales')) {
+    let obj = JSON.parse(localStorage.getItem('objDatosPersonales'))
+    myLatLng = {
+      lat: parseFloat(obj.latitudResidencia),
+      lng: parseFloat(obj.longitudResidencia)
+    };
+    $('#latitudResidencia').val(obj.latitudResidencia);
+    $('#longitudResidencia').val(obj.longitudResidencia);
+  } else {
+    myLatLng = {
+      lat: -12.0262676,
+      lng: -77.1278633
+    };
+  }
+
   map = new google.maps.Map($('#mapResidencia')[0], {
     center: myLatLng,
     zoom: 10
@@ -24,6 +35,14 @@ function initMap() {
     getCordinates();
     $('#latitudResidencia').val(event.latLng.lat());
     $('#longitudResidencia').val(event.latLng.lng());
+    if (localStorage.getItem('objDatosPersonales')) {
+      let obj = JSON.parse(localStorage.getItem('objDatosPersonales'))
+      $('#latitudResidencia').val(event.latLng.lat());
+      $('#longitudResidencia').val(event.latLng.lng());
+      obj.latitudResidencia = event.latLng.lat() + ''
+      obj.longitudResidencia = event.latLng.lng() + ''
+      localStorage.setItem('objDatosPersonales', JSON.stringify(obj))
+    }
   });
 
   // mostrar marcador (marker)
@@ -70,11 +89,11 @@ function getAddress(latlng) {
   geocoder.geocode({'location': latlng}, function (result, status) {
     if (status === 'OK') {
       infowindow.setContent(
-              '<div>' +
-              '<b class="text-uppercase">' + result[0].address_components[1].long_name + '</b> <br/>' +
-              '<span class="text-muted">' + result[0].formatted_address + '</span> <br/>' +
-              '</div>'
-              );
+        '<div>' +
+        '<b class="text-uppercase">' + result[0].address_components[1].long_name + '</b> <br/>' +
+        '<span class="text-muted">' + result[0].formatted_address + '</span> <br/>' +
+        '</div>'
+        );
       infowindow.open(map, marker);
 
     } else {

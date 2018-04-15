@@ -92,7 +92,11 @@
               </div>
             </div>
             <!--AVISO-->
-
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <button id="btnPrueba" class="btn btn-primary">REGISTRASH</button>
+              </div>
+            </div>
             <!--DATOS PERSONALES-->
             <div class="row">
               <div class="col-md-12">
@@ -535,16 +539,6 @@
                               </div>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group tp-error-move-to-last">
-                                <label class="display-block text-uppercase text-semibold">Carrera<span class="text-danger"> (*)</span></label>
-                                <select id="cboCarreraProfesionalFormacionAcademica" name="cboCarreraProfesionalFormacionAcademica">
-                                  <option value="0" selected="selected">[SELECCIONE CARRERA]</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
                           <!--accion agregar-->
                           <div class="row">
                             <div class="col-md-12 text-center">
@@ -709,8 +703,7 @@
                         <div class="row">
                           <div class="col-lg-12 col-md-12 col-sm-12">
                             <label class="display-block text-uppercase">
-                              <!--<u class="tp-info-fondo-pension__title">Seleccione el sistema pensionario en el que se encuentra actualmente</u> <span class="text-danger">(*)</span>&nbsp;-->
-                              <u class="tp-info-fondo-pension__title text-bold">Seleccione el sistema pensionario en el que se encuentra actualmente</u> <span class="text-danger">(*)</span>&nbsp;
+                              <u class="tp-info-fondo-pension__title text-bold regimenPensionarioTitulo">Seleccione el sistema pensionario en el que se encuentra actualmente</u> <span class="text-danger">(*)</span>&nbsp;
                             </label>
                             <div id="divFondoPension">  
                             </div>
@@ -806,13 +799,15 @@
     <script src="../js/pages/general.js" type="text/javascript"></script>
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-    <script src="../js/lib/simple-input-validate.js" type="text/javascript"></script>
-    <script src="../js/pages/ficha.js" type="text/javascript"></script>
-
     <!--libreria maps-->
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCgA2sD34iT4HmBrz1Nj3Pxdg1UQisJRLs&libraries=places&region=ES" defer></script>
     <script src="../js/lib/maps.js" type="text/javascript"></script>
     <!--libreria maps-->
+
+    <script src="../js/lib/simple-input-validate.js" type="text/javascript"></script>
+    <script src="../js/pages/ficha.js" type="text/javascript"></script>
+
+
   </body>
 </html>
 <%
