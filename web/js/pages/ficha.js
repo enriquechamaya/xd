@@ -80,6 +80,15 @@ const helpers = {
   },
   getRow(el, row) {
     return $(getNode(el)).DataTable().row($(row).parents('tr'))
+  },
+  setDataTableLocalStorage(objName, table) {
+    if (localStorage.getItem(objName)) {
+      let obj = JSON.parse(localStorage.getItem(objName))
+      for (let o in obj) {
+        helpers.addObjToDataTable(table, obj[o])
+      }
+      return obj
+    }
   }
 }
 const DOMComponents = {
@@ -188,6 +197,13 @@ const DOMComponents = {
       .forEach((el) => helpers.defaultSelect(el))
     getNodeAll('#txtNumeroDocumentoFamiliar, #txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
       .forEach((el) => el.setAttribute('disabled', true))
+  },
+  switchery() {
+    let switches = Array.prototype.slice.call(getNodeAll('.switch'));
+    switches.forEach(function (el) {
+      let switchery = new Switchery(el, {color: '#FFE66D', secondaryColor: '#F7FFF7'});
+    });
+
   }
 }
 const httpRequest = {
@@ -830,6 +846,7 @@ const getDataFromLocalStorage = {
   init() {
     this.datosFamiliares()
     this.formacionAcademica()
+    this.experienciaLaboral()
   },
   datosFamiliares() {
     if (localStorage.getItem('objFamiliar')) {
@@ -845,12 +862,26 @@ const getDataFromLocalStorage = {
     }
   },
   formacionAcademica() {
-    if (localStorage.getItem('objFormacionAcademica')) {
-      let objJsonFormacionAcademica = JSON.parse(localStorage.getItem('objFormacionAcademica'))
-      for (let obj in objJsonFormacionAcademica) {
-        helpers.addObjToDataTable('#tblFormacionAcademica', objJsonFormacionAcademica[obj])
+    objFormacionAcademica = helpers.setDataTableLocalStorage('objFormacionAcademica', '#tblFormacionAcademica')
+  },
+  experienciaLaboral() {
+    if (localStorage.getItem('objExperienciaLaboral')) {
+      let objJsonExperienciaLaboral = JSON.parse(localStorage.getItem('objExperienciaLaboral'))
+      if (objJsonExperienciaLaboral.length !== 0) {
+        getNode('#textChkExperienciaLaboral').innerHTML = 'SI&nbsp;&nbsp;'
+        getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral, #btnAgregarExperienciaLaboral')
+          .forEach((el) => {
+            el.removeAttribute('disabled')
+          })
+        getNode('#chkExperienciaLaboral').setAttribute('checked', 'checked')
+        getNode('#chkExperienciaLaboral').checked = true
+        flagExperienciaLaboral = true
+        initSwitch()
       }
-      objFormacionAcademica = objJsonFormacionAcademica
+      for (let obj in objJsonExperienciaLaboral) {
+        helpers.addObjToDataTable('#tblExperienciaLaboral', objJsonExperienciaLaboral[obj])
+      }
+      objExperienciaLaboral = objJsonExperienciaLaboral
     }
   }
 }
@@ -1198,15 +1229,58 @@ const Objetos = {
       this.eliminar()
     },
     validar() {
+      let obj = {}
+      obj = {
+        id: helpers.randomId(),
+        empresa: getNode('#txtEmpresaExperienciaLaboral').value.trim(),
+        cargo: getNode('#txtCargoExperienciaLaboral').value.trim(),
+        fechaInicio: getNode('#dpFechaInicioExperienciaLaboral').value.trim(),
+        fechaFin: getNode('#dpFechaFinExperienciaLaboral').value.trim(),
+        telefono: getNode('#txtTelefonoExperienciaLaboral').value.trim()
+      }
 
+      if (toDate(obj.fechaInicio) > toDate(obj.fechaFin)) {
+        return obj = {
+          status: false,
+          message: 'La fecha de inicio es mayor a la de fin. Verifique por favor.'
+        }
+      }
+
+      if (obj.telefono.length !== 7 && obj.telefono.length !== 9 && obj.telefono.length !== 0) {
+        return obj = {
+          status: false,
+          message: 'Verifique el número de teléfono ingresado.'
+        }
+      }
+
+      obj.status = true
+      return obj
     },
     agregar() {
-
+      getNode('#btnAgregarExperienciaLaboral').addEventListener('click', (e) => {
+        if (flagExperienciaLaboral) {
+          let obj = this.validar()
+          if ($(getNode('#formExperienciaLaboral')).valid()) {
+            if (obj.status) {
+              delete obj["status"]
+              objExperienciaLaboral.unshift(obj)
+              localStorage.setItem('objExperienciaLaboral', JSON.stringify(objExperienciaLaboral))
+              helpers.addObjToDataTable('#tblExperienciaLaboral', obj)
+              successMessage('Experiencia laboral agregada!')
+              this.clean()
+            } else {
+              warningMessage(obj.message)
+            }
+          }
+        } else {
+          errorMessage('No puede agregar experiencia laboral.')
+        }
+      })
     },
     listar() {
       defaultConfigDataTable()
       let numeroFilas = 1
-      $(getNode('#tblFormacionAcademica')).DataTable({
+      $(getNode('#tblExperienciaLaboral')).DataTable({
         bInfo: false,
         bPaginate: false,
         columns: [
@@ -1215,24 +1289,10 @@ const Objetos = {
             render: (data, type, row) => numeroFilas++
           },
           {
-            data: 'nombreGrado'
+            data: 'empresa'
           },
           {
-            data: 'nombreEstado'
-          },
-          {
-            data: 'sectorInstitucion'
-          },
-          {
-            data: 'centroEstudios'
-          },
-          {
-            data: 'numeroColegiatura',
-            render: (data, type, row) => data === '' ? '-' : data
-          },
-          {
-            data: 'nombreCarreraProfesional',
-            render: (data, type, row) => data === '' ? '-' : data
+            data: 'cargo'
           },
           {
             data: 'fechaInicio'
@@ -1241,11 +1301,15 @@ const Objetos = {
             data: 'fechaFin'
           },
           {
+            data: 'telefono',
+            render: (data, type, row) => data === '' ? '-' : data
+          },
+          {
             data: null,
             render: (data, type, row) => {
               return `<ul class="icons-list">
                         <li title="Eliminar" class="text-danger-600">
-                            <a href="#" onclick="return false" class="eliminarFormacionAcademica"><i class="fa fa-trash-o fa-lg"></i></a>
+                            <a href="#" onclick="return false" class="eliminarExperienciaLaboral"><i class="fa fa-trash-o fa-lg"></i></a>
                         </li>
                       </ul>`;
             }
@@ -1254,10 +1318,41 @@ const Objetos = {
       })
     },
     eliminar() {
-
+      $(getNode('#tblExperienciaLaboral tbody')).on('click', '.eliminarExperienciaLaboral', (e) => {
+        let fila = helpers.getRow('#tblExperienciaLaboral', e.currentTarget)
+        let data = fila.data()
+        $.confirm({
+          icon: 'glyphicon glyphicon-question-sign',
+          theme: 'material',
+          closeIcon: true,
+          animation: 'scale',
+          type: 'dark',
+          title: 'Confirmar',
+          content: `<span class="text-semibold">¿Seguro de eliminar la experiencia laboral?</span>`,
+          buttons: {
+            Eliminar: {
+              btnClass: 'btn-success',
+              action: function () {
+                let objJsonExperienciaLaboral = removeByKey(objExperienciaLaboral, {key: 'id', value: data.id});
+                if (objJsonExperienciaLaboral.length === 0) {
+                  localStorage.removeItem('objExperienciaLaboral');
+                } else {
+                  localStorage.setItem("objExperienciaLaboral", JSON.stringify(objExperienciaLaboral));
+                }
+                fila.remove().draw();
+                successMessage("Experiencia laboral eliminada");
+              }
+            },
+            Cancelar: {
+              btnClass: 'btn-danger'
+            }
+          }
+        });
+      })
     },
-    clear() {
-
+    clean() {
+      getNodeAll('#txtEmpresaExperienciaLaboral, #txtCargoExperienciaLaboral, #dpFechaInicioExperienciaLaboral, #dpFechaFinExperienciaLaboral, #txtTelefonoExperienciaLaboral')
+        .forEach((el) => el.value = '')
     }
   },
   regimenPensionario: {
@@ -1296,6 +1391,7 @@ Objetos.init()
 setTimeout(() => {
   getDataFromLocalStorage.init()
 }, 0)
+
 /*
  TODO:
  1) ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
@@ -1314,8 +1410,3 @@ setTimeout(() => {
  
  
  */
-
-var switches = Array.prototype.slice.call(getNodeAll('.switch'));
-switches.forEach(function (el) {
-  var switchery = new Switchery(el, {color: '#FFE66D', secondaryColor: '#F7FFF7'});
-});

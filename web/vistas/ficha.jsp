@@ -644,7 +644,7 @@
                             <div class="col-md-3">
                               <div class="form-group">
                                 <label class="display-block text-uppercase text-semibold tp-text">Teléfono&nbsp;</label>
-                                <input id="txtTelefonoExperienciaLaboral" name="txtTelefonoExperienciaLaboral" type="text" class="form-control" maxlength="12">
+                                <input id="txtTelefonoExperienciaLaboral" name="txtTelefonoExperienciaLaboral" type="text" class="form-control" maxlength="9">
                               </div>
                             </div>
                           </div>
