@@ -939,7 +939,8 @@ const Objetos = {
             render: (data, type, row) => data === 'M' ? 'MASCULINO' : 'FEMENINO'
           },
           {
-            data: 'telefono'
+            data: 'telefono',
+            render: (data, type, row) => data === '' ? '-' : data
           },
           {
             data: null,
@@ -1000,13 +1001,229 @@ const Objetos = {
     }
   },
   formacionAcademica: {
+    init() {
+      this.agregar()
+      this.listar()
+      this.eliminar()
+    },
+    validar() {
+      let obj = {}
+      obj = {
+        id: helpers.randomId(),
+        codigoParentesco: parseInt(getNode('#cboParentescoFamiliar').value),
+        nombreParentesco: getNode('#cboParentescoFamiliar').options[getNode('#cboParentescoFamiliar').selectedIndex].text.toUpperCase(),
+        apellidoPaterno: getNode('#txtApellidoPaternoFamiliar').value.toUpperCase().trim(),
+        apellidoMaterno: getNode('#txtApellidoMaternoFamiliar').value.toUpperCase().trim(),
+        nombre: getNode('#txtNombreFamiliar').value.toUpperCase().trim(),
+        fechaNacimiento: getNode('#dpFechaNacimientoFamiliar').value.trim(),
+        codigoTipoDocumento: parseInt(getNode('#cbotipoDocumentoFamiliar').value),
+        nombreTipoDocumento: getNode('#cbotipoDocumentoFamiliar').options[getNode('#cbotipoDocumentoFamiliar').selectedIndex].text.toUpperCase(),
+        longitud: parseInt(getNode('#txtNumeroDocumentoFamiliar').getAttribute('maxlength')),
+        tipoEntrada: getNode('#txtNumeroDocumentoFamiliar').getAttribute('entrada'),
+        numeroDocumento: getNode('#txtNumeroDocumentoFamiliar').value.trim(),
+        sexo: getNode('#cboSexoFamiliar').value,
+        telefono: getNode('#txtTelefonoFamiliar').value.trim()
+      }
 
+      if (helpers.validateValueFromArray(obj.numeroDocumento, objFamiliar, 'numeroDocumento')) {
+        return obj = {
+          status: false,
+          message: 'El número de documento es repetido.'
+        }
+      }
+
+      if (obj.sexo !== 'M' && obj.sexo !== 'F') {
+        return obj = {
+          status: false,
+          message: 'No se encontró el sexo registrado.'
+        }
+      }
+
+      if (!helpers.dateLessThan(obj.fechaNacimiento)) {
+        return obj = {
+          status: false,
+          message: 'La fecha de nacimiento no puede ser mayor a la actual.'
+        }
+      }
+
+      if (obj.telefono.length !== 7 && obj.telefono.length !== 9 && obj.telefono.length !== 0) {
+        return obj = {
+          status: false,
+          message: 'Verifique el número de teléfono ingresado.'
+        }
+      }
+
+      if (obj.numeroDocumento === getNode('#lblNumeroDocumento').innerText) {
+        return obj = {
+          status: false,
+          message: 'Cuidado con quien agregas como familiar.'
+        }
+      }
+
+      obj.status = true
+      obj.message = 'Familiar agregado!'
+      return obj
+
+    },
+    agregar() {
+      getNode('#btnAgregarFamiliar').addEventListener('click', (e) => {
+        let obj = this.validar()
+        if ($(getNode('#formDatosFamiliares')).valid()) {
+          if (obj.status) {
+            delete obj["status"]
+            objFamiliar.unshift(obj)
+            localStorage.setItem('objFamiliar', JSON.stringify(objFamiliar))
+            helpers.addObjToDataTable('#tblFamiliar', obj)
+            if (obj.codigoParentesco === 1 || obj.codigoParentesco === 2) {
+              getNode(`#cboParentescoFamiliar option[value='${obj.codigoParentesco}']`).setAttribute('disabled', true)
+              $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
+            }
+            successMessage(obj.message)
+            this.clean()
+          } else {
+            warningMessage(obj.message)
+          }
+        }
+      })
+    },
+    listar() {
+      defaultConfigDataTable()
+      let numeroFilas = 1
+      $(getNode('#tblFormacionAcademica')).DataTable({
+        bInfo: false,
+        bPaginate: false,
+        columns: [
+          {
+            data: null,
+            render: (data, type, row) => numeroFilas++
+          },
+          {
+            data: 'nombreGrado'
+          },
+          {
+            data: 'nombreEstado'
+          },
+          {
+            data: 'posicionInstitucion'
+          },
+          {
+            data: 'centroEstudios'
+          },
+          {
+            data: 'numeroColegiatura',
+            render: (data, type, row) => data === '' ? '-' : data
+          },
+          {
+            data: 'nombreCarreraProfesional',
+            render: (data, type, row) => data === '' ? '-' : data
+          },
+          {
+            data: 'fechaInicio'
+          },
+          {
+            data: 'fechaFin'
+          },
+          {
+            data: null,
+            render: (data, type, row) => {
+              return `<ul class="icons-list">
+                        <li title="Eliminar" class="text-danger-600">
+                            <a href="#" onclick="return false" class="eliminarFormacionAcademica"><i class="fa fa-trash-o fa-lg"></i></a>
+                        </li>
+                      </ul>`;
+            }
+          }
+        ]
+      })
+    },
+    eliminar() {
+      $(getNode('#tblFamiliar tbody')).on('click', '.eliminarFamiliar', (e) => {
+        let fila = helpers.getRow('#tblFamiliar', e.currentTarget)
+        let data = fila.data()
+        $.confirm({
+          icon: 'glyphicon glyphicon-question-sign',
+          theme: 'material',
+          closeIcon: true,
+          animation: 'scale',
+          type: 'dark',
+          title: 'Confirmar',
+          content: `<span class="text-semibold">¿Seguro de eliminar a ${data.nombre} ${data.apellidoPaterno}?</span>`,
+          buttons: {
+            Eliminar: {
+              btnClass: 'btn-success',
+              action: function () {
+                let objJsonFamiliar = removeByKey(objFamiliar, {key: 'id', value: data.id});
+                getNode(`#cboParentescoFamiliar option[value='${data.codigoParentesco}']`).removeAttribute('disabled')
+                $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
+                if (objJsonFamiliar.length === 0) {
+                  localStorage.removeItem('objFamiliar');
+                } else {
+                  localStorage.setItem("objFamiliar", JSON.stringify(objJsonFamiliar));
+                }
+                fila.remove().draw();
+                successMessage("Familiar eliminado");
+              }
+            },
+            Cancelar: {
+              btnClass: 'btn-danger'
+            }
+          }
+        });
+      })
+    },
+    clean() {
+      getNodeAll('#txtApellidoPaternoFamiliar, #txtApellidoMaternoFamiliar, #txtNombreFamiliar, #dpFechaNacimientoFamiliar, #txtNumeroDocumentoFamiliar, #txtTelefonoFamiliar').forEach((el) => el.value = '')
+      getNode('#txtNumeroDocumentoFamiliar').setAttribute('disabled', true)
+      getNodeAll('#cboParentescoFamiliar, #cbotipoDocumentoFamiliar, #cboSexoFamiliar').forEach((el) => {
+        el.selectedIndex = 0
+        $(el).selectpicker('refresh')
+      })
+
+    }
   },
   experienciaLaboral: {
+    init() {
+      this.agregar()
+      this.listar()
+      this.eliminar()
+    },
+    validar() {
 
+    },
+    agregar() {
+
+    },
+    listar() {
+
+    },
+    eliminar() {
+
+    },
+    clear() {
+
+    }
   },
   regimenPensionario: {
+    init() {
+      this.agregar()
+      this.listar()
+      this.eliminar()
+    },
+    validar() {
 
+    },
+    agregar() {
+
+    },
+    listar() {
+
+    },
+    eliminar() {
+
+    },
+    clear() {
+
+    }
   }
 }
 

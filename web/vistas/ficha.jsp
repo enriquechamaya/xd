@@ -560,17 +560,18 @@
                                 <table class="table table-bordered table-striped table-framed table-xxs" id="tblFormacionAcademica">
                                   <thead class="text-primary-800" style="background-color: #EEEEEE;">
                                     <tr>
+                                      <th>#</th>
                                       <th>GRADO ESTUDIO</th>
                                       <th>ESTADO ESTUDIO</th>
-                                      <th>CENTRO DE ESTUDIO</th>
+                                      <th>INSTITUCION</th>
+                                      <th>CENTRO DE ESTUDIOS</th>
+                                      <th>N° COLEGIATURA</th>
                                       <th>CARRERA</th>
                                       <th>FECHA INICIO</th>
                                       <th>FECHA FIN</th>
                                       <th>ACCION</th>
                                     </tr>
                                   </thead>
-                                  <tbody>
-                                  </tbody>
                                 </table>
                               </div>
                             </div>
