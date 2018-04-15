@@ -1,7 +1,7 @@
 "use strict";
 // globals
 let objFamiliar = [], objExperienciaLaboral = [], objFormacionAcademica = []
-let codigoUbigeoNacimiento = 0, codigoUbigeoResidencia = 0
+let codigoUbigeoNacimiento = 0, codigoUbigeoResidencia = 0, codigoGradoEstudio = 0
 let flagExperienciaLaboral = false, flagRegimenPensionario = true
 
 const getNode = node => document.querySelector(node)
@@ -310,6 +310,19 @@ const httpRequest = {
           codigoNivelEstudio: codigoGradoEstudio
         }
       })
+    },
+    obtenerGradoEstadoEstudio(codigoGradoEstudio, codigoEstadoEstudio) {
+      return helpers.ajaxRequest({
+        url: '../NivelEstadoServlet',
+        type: 'POST',
+        dataType: 'json',
+        loadingMessage: 'Obteniendo grado y estado del estudio',
+        body: {
+          accion: 'obtenerNivelEstado',
+          codigoNivelEstudio: codigoGradoEstudio,
+          codigoEstadoEstudio: codigoEstadoEstudio
+        }
+      })
     }
   },
   datosRegimenPensionario: {
@@ -441,6 +454,7 @@ const DOMEvents = () => {
 
   // formacion academica
   getNode('#cboGradoEstudioFormacionAcademica').addEventListener('change', (e) => {
+    codigoGradoEstudio = 0
     let gradoEstudio = parseInt(e.currentTarget.value)
     if (gradoEstudio !== 0) {
       httpRequest.datosFormacionAcademica.listarEstadoEstudio(gradoEstudio)
@@ -448,8 +462,23 @@ const DOMEvents = () => {
           let options = helpers.createSelectOptions(data.data.estadoestudio, 'codigoEstadoEstudio', 'nombre')
           helpers.filteredSelect(getNode('#cboEstadoEstudioFormacionAcademica'), options)
         })
+      getNode('#txtCarreraProfesional').removeAttribute('disabled')
+      if (gradoEstudio === 1 || gradoEstudio === 2) {
+        getNode('#txtCarreraProfesional').setAttribute('disabled', true)
+        getNode('#txtCarreraProfesional').value = ''
+      }
     } else {
       helpers.defaultSelect(getNode('#cboEstadoEstudioFormacionAcademica'))
+    }
+  })
+  getNode('#cboEstadoEstudioFormacionAcademica').addEventListener('change', (e) => {
+    let estado = parseInt(e.currentTarget.value)
+    let grado = parseInt(getNode('#cboGradoEstudioFormacionAcademica').value)
+    if (estado !== 0) {
+      httpRequest.datosFormacionAcademica.obtenerGradoEstadoEstudio(grado, estado)
+        .then((data) => {
+          codigoGradoEstudio = data.data.getResultedKey
+        })
     }
   })
 
@@ -800,24 +829,36 @@ const formsValidation = {
 const getDataFromLocalStorage = {
   init() {
     this.datosFamiliares()
+    this.formacionAcademica()
   },
   datosFamiliares() {
     if (localStorage.getItem('objFamiliar')) {
       let objJsonFamiliar = JSON.parse(localStorage.getItem('objFamiliar'))
-      for (let i = 0; i < objJsonFamiliar.length; i++) {
-        helpers.addObjToDataTable('#tblFamiliar', objJsonFamiliar[i])
-        if (objJsonFamiliar[i].codigoParentesco === 1 || objJsonFamiliar[i].codigoParentesco === 2) {
-          getNode(`#cboParentescoFamiliar option[value='${objJsonFamiliar[i].codigoParentesco}']`).setAttribute('disabled', true)
+      for (let obj in objJsonFamiliar) {
+        helpers.addObjToDataTable('#tblFamiliar', objJsonFamiliar[obj])
+        if (objJsonFamiliar[obj].codigoParentesco === 1 || objJsonFamiliar[obj].codigoParentesco === 2) {
+          getNode(`#cboParentescoFamiliar option[value='${objJsonFamiliar[obj].codigoParentesco}']`).setAttribute('disabled', true)
           $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
         }
       }
       objFamiliar = objJsonFamiliar
+    }
+  },
+  formacionAcademica() {
+    if (localStorage.getItem('objFormacionAcademica')) {
+      let objJsonFormacionAcademica = JSON.parse(localStorage.getItem('objFormacionAcademica'))
+      for (let obj in objJsonFormacionAcademica) {
+        helpers.addObjToDataTable('#tblFormacionAcademica', objJsonFormacionAcademica[obj])
+      }
+      objFormacionAcademica = objJsonFormacionAcademica
     }
   }
 }
 const Objetos = {
   init() {
     this.datosFamiliares.init()
+    this.formacionAcademica.init()
+    this.experienciaLaboral.init()
   },
   datosFamiliares: {
     init() {
@@ -880,7 +921,6 @@ const Objetos = {
       }
 
       obj.status = true
-      obj.message = 'Familiar agregado!'
       return obj
 
     },
@@ -897,7 +937,7 @@ const Objetos = {
               getNode(`#cboParentescoFamiliar option[value='${obj.codigoParentesco}']`).setAttribute('disabled', true)
               $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
             }
-            successMessage(obj.message)
+            successMessage('Familiar agregado!')
             this.clean()
           } else {
             warningMessage(obj.message)
@@ -1010,75 +1050,47 @@ const Objetos = {
       let obj = {}
       obj = {
         id: helpers.randomId(),
-        codigoParentesco: parseInt(getNode('#cboParentescoFamiliar').value),
-        nombreParentesco: getNode('#cboParentescoFamiliar').options[getNode('#cboParentescoFamiliar').selectedIndex].text.toUpperCase(),
-        apellidoPaterno: getNode('#txtApellidoPaternoFamiliar').value.toUpperCase().trim(),
-        apellidoMaterno: getNode('#txtApellidoMaternoFamiliar').value.toUpperCase().trim(),
-        nombre: getNode('#txtNombreFamiliar').value.toUpperCase().trim(),
-        fechaNacimiento: getNode('#dpFechaNacimientoFamiliar').value.trim(),
-        codigoTipoDocumento: parseInt(getNode('#cbotipoDocumentoFamiliar').value),
-        nombreTipoDocumento: getNode('#cbotipoDocumentoFamiliar').options[getNode('#cbotipoDocumentoFamiliar').selectedIndex].text.toUpperCase(),
-        longitud: parseInt(getNode('#txtNumeroDocumentoFamiliar').getAttribute('maxlength')),
-        tipoEntrada: getNode('#txtNumeroDocumentoFamiliar').getAttribute('entrada'),
-        numeroDocumento: getNode('#txtNumeroDocumentoFamiliar').value.trim(),
-        sexo: getNode('#cboSexoFamiliar').value,
-        telefono: getNode('#txtTelefonoFamiliar').value.trim()
+        codigoGrado: parseInt(getNode('#cboGradoEstudioFormacionAcademica').value),
+        codigoEstado: parseInt(getNode('#cboEstadoEstudioFormacionAcademica').value),
+        nombreGrado: getNode('#cboGradoEstudioFormacionAcademica').options[getNode('#cboGradoEstudioFormacionAcademica').selectedIndex].text.toUpperCase(),
+        nombreEstado: getNode('#cboEstadoEstudioFormacionAcademica').options[getNode('#cboEstadoEstudioFormacionAcademica').selectedIndex].text.toUpperCase(),
+        codigoNivelEstado: codigoGradoEstudio,
+        sectorInstitucion: getNode('#cboPosicionInstitucion').options[getNode('#cboPosicionInstitucion').selectedIndex].text.toUpperCase(),
+        centroEstudios: getNode('#txtCentroEstudiosFormacionAcademica').value.toUpperCase().trim(),
+        numeroColegiatura: getNode('#txtNumeroColegiatura').value.toUpperCase().trim(),
+        nombreCarreraProfesional: getNode('#txtCarreraProfesional').value.toUpperCase().trim(),
+        fechaInicio: getNode('#dpFechaInicioFormacionAcademica').value.trim(),
+        fechaFin: getNode('#dpFechaFinFormacionAcademica').value.trim()
       }
 
-      if (helpers.validateValueFromArray(obj.numeroDocumento, objFamiliar, 'numeroDocumento')) {
+      if (helpers.toDate(obj.fechaInicio) > helpers.toDate(obj.fechaFin)) {
         return obj = {
           status: false,
-          message: 'El número de documento es repetido.'
+          message: 'La fecha de inicio es mayor a la de fin. Verifique por favor.'
         }
       }
 
-      if (obj.sexo !== 'M' && obj.sexo !== 'F') {
-        return obj = {
-          status: false,
-          message: 'No se encontró el sexo registrado.'
-        }
+      if (obj.codigoGrado === 1 || obj.codigoGrado === 2) {
+        obj.nombreCarreraProfesional = ''
       }
 
-      if (!helpers.dateLessThan(obj.fechaNacimiento)) {
-        return obj = {
-          status: false,
-          message: 'La fecha de nacimiento no puede ser mayor a la actual.'
-        }
-      }
-
-      if (obj.telefono.length !== 7 && obj.telefono.length !== 9 && obj.telefono.length !== 0) {
-        return obj = {
-          status: false,
-          message: 'Verifique el número de teléfono ingresado.'
-        }
-      }
-
-      if (obj.numeroDocumento === getNode('#lblNumeroDocumento').innerText) {
-        return obj = {
-          status: false,
-          message: 'Cuidado con quien agregas como familiar.'
-        }
-      }
+      delete obj["codigoGrado"]
+      delete obj["codigoEstado"]
 
       obj.status = true
-      obj.message = 'Familiar agregado!'
       return obj
 
     },
     agregar() {
-      getNode('#btnAgregarFamiliar').addEventListener('click', (e) => {
+      getNode('#btnAgregarFormacionAcademica').addEventListener('click', (e) => {
         let obj = this.validar()
-        if ($(getNode('#formDatosFamiliares')).valid()) {
+        if ($(getNode('#formFormacionAcademica')).valid()) {
           if (obj.status) {
             delete obj["status"]
-            objFamiliar.unshift(obj)
-            localStorage.setItem('objFamiliar', JSON.stringify(objFamiliar))
-            helpers.addObjToDataTable('#tblFamiliar', obj)
-            if (obj.codigoParentesco === 1 || obj.codigoParentesco === 2) {
-              getNode(`#cboParentescoFamiliar option[value='${obj.codigoParentesco}']`).setAttribute('disabled', true)
-              $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
-            }
-            successMessage(obj.message)
+            objFormacionAcademica.unshift(obj)
+            localStorage.setItem('objFormacionAcademica', JSON.stringify(objFormacionAcademica))
+            helpers.addObjToDataTable('#tblFormacionAcademica', obj)
+            successMessage('Formacion académica agregada!')
             this.clean()
           } else {
             warningMessage(obj.message)
@@ -1104,7 +1116,7 @@ const Objetos = {
             data: 'nombreEstado'
           },
           {
-            data: 'posicionInstitucion'
+            data: 'sectorInstitucion'
           },
           {
             data: 'centroEstudios'
@@ -1137,8 +1149,8 @@ const Objetos = {
       })
     },
     eliminar() {
-      $(getNode('#tblFamiliar tbody')).on('click', '.eliminarFamiliar', (e) => {
-        let fila = helpers.getRow('#tblFamiliar', e.currentTarget)
+      $(getNode('#tblFormacionAcademica tbody')).on('click', '.eliminarFormacionAcademica', (e) => {
+        let fila = helpers.getRow('#tblFormacionAcademica', e.currentTarget)
         let data = fila.data()
         $.confirm({
           icon: 'glyphicon glyphicon-question-sign',
@@ -1147,21 +1159,19 @@ const Objetos = {
           animation: 'scale',
           type: 'dark',
           title: 'Confirmar',
-          content: `<span class="text-semibold">¿Seguro de eliminar a ${data.nombre} ${data.apellidoPaterno}?</span>`,
+          content: `<span class="text-semibold">¿Seguro de eliminar la formación académica?</span>`,
           buttons: {
             Eliminar: {
               btnClass: 'btn-success',
               action: function () {
-                let objJsonFamiliar = removeByKey(objFamiliar, {key: 'id', value: data.id});
-                getNode(`#cboParentescoFamiliar option[value='${data.codigoParentesco}']`).removeAttribute('disabled')
-                $(getNode('#cboParentescoFamiliar')).selectpicker('refresh')
-                if (objJsonFamiliar.length === 0) {
-                  localStorage.removeItem('objFamiliar');
+                let objJsonFormacionAcademica = removeByKey(objFormacionAcademica, {key: 'id', value: data.id});
+                if (objJsonFormacionAcademica.length === 0) {
+                  localStorage.removeItem('objFormacionAcademica');
                 } else {
-                  localStorage.setItem("objFamiliar", JSON.stringify(objJsonFamiliar));
+                  localStorage.setItem("objFormacionAcademica", JSON.stringify(objFormacionAcademica));
                 }
                 fila.remove().draw();
-                successMessage("Familiar eliminado");
+                successMessage("Formación académica eliminada");
               }
             },
             Cancelar: {
@@ -1172,13 +1182,13 @@ const Objetos = {
       })
     },
     clean() {
-      getNodeAll('#txtApellidoPaternoFamiliar, #txtApellidoMaternoFamiliar, #txtNombreFamiliar, #dpFechaNacimientoFamiliar, #txtNumeroDocumentoFamiliar, #txtTelefonoFamiliar').forEach((el) => el.value = '')
-      getNode('#txtNumeroDocumentoFamiliar').setAttribute('disabled', true)
-      getNodeAll('#cboParentescoFamiliar, #cbotipoDocumentoFamiliar, #cboSexoFamiliar').forEach((el) => {
+      getNode('#cboEstadoEstudioFormacionAcademica').setAttribute('disabled', true)
+      getNodeAll('#txtCentroEstudiosFormacionAcademica, #txtNumeroColegiatura, #txtCarreraProfesional, #dpFechaInicioFormacionAcademica, #dpFechaFinFormacionAcademica').forEach((el) => el.value = '')
+      getNodeAll('#cboGradoEstudioFormacionAcademica, #cboEstadoEstudioFormacionAcademica, #cboPosicionInstitucion').forEach((el) => {
         el.selectedIndex = 0
         $(el).selectpicker('refresh')
       })
-
+      codigoGradoEstudio = 0
     }
   },
   experienciaLaboral: {
@@ -1194,7 +1204,54 @@ const Objetos = {
 
     },
     listar() {
-
+      defaultConfigDataTable()
+      let numeroFilas = 1
+      $(getNode('#tblFormacionAcademica')).DataTable({
+        bInfo: false,
+        bPaginate: false,
+        columns: [
+          {
+            data: null,
+            render: (data, type, row) => numeroFilas++
+          },
+          {
+            data: 'nombreGrado'
+          },
+          {
+            data: 'nombreEstado'
+          },
+          {
+            data: 'sectorInstitucion'
+          },
+          {
+            data: 'centroEstudios'
+          },
+          {
+            data: 'numeroColegiatura',
+            render: (data, type, row) => data === '' ? '-' : data
+          },
+          {
+            data: 'nombreCarreraProfesional',
+            render: (data, type, row) => data === '' ? '-' : data
+          },
+          {
+            data: 'fechaInicio'
+          },
+          {
+            data: 'fechaFin'
+          },
+          {
+            data: null,
+            render: (data, type, row) => {
+              return `<ul class="icons-list">
+                        <li title="Eliminar" class="text-danger-600">
+                            <a href="#" onclick="return false" class="eliminarFormacionAcademica"><i class="fa fa-trash-o fa-lg"></i></a>
+                        </li>
+                      </ul>`;
+            }
+          }
+        ]
+      })
     },
     eliminar() {
 

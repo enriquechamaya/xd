@@ -661,6 +661,7 @@
                                 <table class="table table-bordered table-striped table-framed table-xxs" id="tblExperienciaLaboral">
                                   <thead class="text-primary-800" style="background-color: #EEEEEE;">
                                     <tr>
+                                      <th>#</th>
                                       <th>EMPRESA</th>
                                       <th>CARGO</th>
                                       <th>FECHA INICIO</th>
@@ -669,8 +670,6 @@
                                       <th>ACCION</th>
                                     </tr>
                                   </thead>
-                                  <tbody>
-                                  </tbody>
                                 </table>
                               </div>
                             </div>
