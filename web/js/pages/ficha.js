@@ -2,7 +2,7 @@
 // globals
 let objFamiliar = [], objExperienciaLaboral = [], objFormacionAcademica = []
 let codigoUbigeoNacimiento = 0, codigoUbigeoResidencia = 0, codigoGradoEstudio = 0
-let flagExperienciaLaboral = false, flagRegimenPensionario = true
+let flagExperienciaLaboral = false, flagRegimenPensionario = true, statusFoto = false
 
 const getNode = node => document.querySelector(node)
 const getNodeAll = nodeList => document.querySelectorAll(nodeList)
@@ -89,6 +89,25 @@ const helpers = {
       }
       return obj
     }
+  },
+  calculateAge(dateOfBirth) {
+    let date = new Date()
+    let calculateYear = date.getFullYear();
+    let calculateMonth = date.getMonth();
+    let calculateDay = date.getDate();
+
+    let birthYear = dateOfBirth.getFullYear();
+    let birthMonth = dateOfBirth.getMonth();
+    let birthDay = dateOfBirth.getDate();
+
+    let age = calculateYear - birthYear;
+    let ageMonth = calculateMonth - birthMonth;
+    let ageDay = calculateDay - birthDay;
+
+    if (ageMonth < 0 || (ageMonth === 0 && ageDay < 0)) {
+      age = parseInt(age) - 1;
+    }
+    return age;
   }
 }
 const DOMComponents = {
@@ -368,6 +387,18 @@ const httpRequest = {
         }
       })
     }
+  },
+  registrarFicha(obj) {
+    return helpers.ajaxRequest({
+      url: '../FichaServlet',
+      type: 'POST',
+      dataType: 'json',
+      loadingMessage: 'Validando datos ingresados, espere un momento por favor',
+      body: {
+        accion: 'registrarFicha',
+        json: JSON.stringify(obj)
+      }
+    })
   }
 }
 const DOMEvents = () => {
@@ -459,6 +490,17 @@ const DOMEvents = () => {
         codigoUbigeoResidencia = data.data.getResultedKey
       })
   })
+  $('#lblFoto').on('change.bs.fileinput', (event) => {
+    let imgName = getNode('#lblFoto').value.split('\\');
+    let imgExtension = imgName[imgName.length - 1].substring(imgName[imgName.length - 1].indexOf('.'), imgName[imgName.length - 1].length);
+    if (imgExtension === '.PNG' || imgExtension === '.png' ||
+      imgExtension === '.JPG' || imgExtension === '.jpg' ||
+      imgExtension === '.JPEG' || imgExtension === '.jpeg') {
+      statusFoto = true;
+    } else {
+      statusFoto = false;
+    }
+  });
 
   // datos familiares
   getNode('#cbotipoDocumentoFamiliar').addEventListener('change', (e) => {
@@ -567,6 +609,51 @@ const DOMEvents = () => {
       getNode('#textChkRegimenPensionario').innerHTML = 'NO'
       getNode('.regimenPensionarioTitulo').innerText = 'SELECCIONE EL SISTEMA PENSIONARIO AL QUE DESEA APORTAR'
       flagRegimenPensionario = false
+    }
+  })
+
+  // registrar fichas
+  getNode('#btnRegistrarFicha').addEventListener('click', (e) => {
+    let formsValid = formsValidation.valid()
+    if (formsValid.status) {
+      let valid = Objetos.datosPersonales.validar()
+      if (valid.status) {
+        delete valid["status"]
+        delete valid["node"]
+        delete valid["codigoDepartamentoNacimiento"]
+        delete valid["codigoProvinciaNacimiento"]
+        delete valid["codigoDistritoNacimiento"]
+        $.confirm({
+          icon: 'glyphicon glyphicon-question-sign',
+          theme: 'material',
+          closeIcon: true,
+          animation: 'scale',
+//                type: 'blue',
+          type: 'dark',
+          title: 'Confirmar',
+          content: '<span class="text-semibold">Asegúrese de haber ingresado los datos con total veracidad, si usted está seguro de haber ingresado los datos correctos, de clic en registrar de lo contrario dar clic en cancelar <br/> ¿Desea registrar la ficha?</span>',
+          buttons: {
+            Registrar: {
+              btnClass: 'btn-success',
+              action: function () {
+                httpRequest.registrarFicha()
+                  .then((data) => {
+                    console.log(data)
+                  })
+                  .catch(err => console.log(err))
+              }
+            },
+            Cancelar: {
+              btnClass: 'btn-danger'
+            }
+          }
+        })
+      } else {
+        console.log(valid)
+        warningMessage(valid.message, smoothScrolling(valid.node))
+      }
+    } else {
+      warningMessage(formsValid.message, smoothScrolling(formsValid.node))
     }
   })
 
@@ -889,43 +976,56 @@ const formsValidation = {
     if (!$(getNode('#formDatosPersonales')).valid()) {
       return {
         status: false,
-        message: 'Ingrese sus datos personales completos, por favor.'
+        message: 'Ingrese sus datos personales completos, por favor.',
+        node: '#formDatosPersonales'
       }
     }
     if (objFamiliar.length === 0) {
       return {
         status: false,
-        message: 'Debe ingresar al menos un familiar, por favor.'
+        message: 'Debe ingresar al menos un familiar, por favor.',
+        node: '#formDatosFamiliares'
       }
     }
     if (objFormacionAcademica.length === 0) {
       return {
         status: false,
-        message: 'Debe ingresar al menos una formación académica, por favor.'
+        message: 'Debe ingresar al menos una formación académica, por favor.',
+        node: '#formFormacionAcademica'
       }
     }
     if (flagExperienciaLaboral) {
       if (objExperienciaLaboral.length === 0) {
         return {
           status: false,
-          message: 'Debe ingresar una experiencia laboral si tiene marcado la opción.'
+          message: 'Debe ingresar una experiencia laboral si tiene marcado la opción.',
+          node: '#formExperienciaLaboral'
         }
       }
     }
     if (!$(getNode('#formFondoPension')).valid()) {
       return {
         status: false,
-        message: 'Debe escoger un fondo pensionario, por favor.'
+        message: 'Debe escoger un fondo pensionario, por favor.',
+        node: '#formFondoPension'
       }
+    }
+
+    return {
+      status: true
     }
   }
 }
 const getDataFromLocalStorage = {
   init() {
+    this.datosPersonales()
     this.datosFamiliares()
     this.formacionAcademica()
     this.experienciaLaboral()
     this.regimenPensionario()
+  },
+  datosPersonales() {
+
   },
   datosFamiliares() {
     if (localStorage.getItem('objFamiliar')) {
@@ -941,7 +1041,13 @@ const getDataFromLocalStorage = {
     }
   },
   formacionAcademica() {
-    objFormacionAcademica = helpers.setDataTableLocalStorage('objFormacionAcademica', '#tblFormacionAcademica')
+    if (localStorage.getItem('objFormacionAcademica')) {
+      let objJsonFormacionAcademica = JSON.parse(localStorage.getItem('objFormacionAcademica'))
+      for (let o in objJsonFormacionAcademica) {
+        helpers.addObjToDataTable('#tblFormacionAcademica', objJsonFormacionAcademica[o])
+      }
+      objFormacionAcademica = objJsonFormacionAcademica
+    }
   },
   experienciaLaboral() {
     if (localStorage.getItem('objExperienciaLaboral')) {
@@ -993,8 +1099,67 @@ const Objetos = {
     validar() {
       let obj = {}
 
+      obj = {
+        ruc: $('#txtNumeroRUC').val().trim(),
+        apellidoPaterno: $('#txtApellidoPaterno').val().trim(),
+        apellidoMaterno: $('#txtApellidoMaterno').val().trim(),
+        nombre: $('#txtNombre').val().trim(),
+        sexo: getNode('#cboSexo').value,
+        codigoEstadoCivil: parseInt(getNode('#cboEstadoCivil').value),
+        fechaNacimiento: getNode('#dpFechaNacimiento').value.trim(),
+        codigoNacionalidad: parseInt(getNode('#cboNacionalidad').value),
+        codigoDepartamentoNacimiento: parseInt(getNode('#cboDepartamentoNacimiento').value),
+        codigoProvinciaNacimiento: parseInt(getNode('#cboProvinciaNacimiento').value),
+        codigoDistritoNacimiento: parseInt(getNode('#cboDistritoNacimiento').value),
+        codigoUbigeoNacimiento: codigoUbigeoNacimiento,
+        direccionDocumento: getNode('#txtDireccionDocumento').value.trim(),
+        telefonoFijo: getNode('#txtTelefonoFijo').value.trim(),
+        telefonoMovil: getNode('#txtTelefonoMovil').value.trim(),
+        correo: getNode('#txtCorreoElectronico').value.trim(),
+        codigoDepartamentoResidencia: parseInt(getNode('#cboDepartamentoResidencia').value),
+        codigoProvinciaResidencia: parseInt(getNode('#cboProvinciaResidencia').value),
+        codigoDistritoResidencia: parseInt(getNode('#cboDistritoResidencia').value),
+        codigoUbigeoResidencia: codigoUbigeoResidencia,
+        direccionResidencia: getNode('#txtDireccionResidencia').value.trim(),
+        latitudResidencia: getNode('#latitudResidencia').value,
+        longitudResidencia: getNode('#longitudResidencia').value,
+        fondoPensionActivo: flagRegimenPensionario,
+        codigoFondoPension: parseInt(getNode('input[name=rdFondoPension]:checked').value),
+        experienciaLaboralActivo: flagExperienciaLaboral,
+        codigoTipoDocumento: parseInt(getNode('#codigoTipoDocumento').value),
+        cargaFamiliar: objFamiliar,
+        formacionAcademica: objFormacionAcademica,
+        experienciaLaboral: objExperienciaLaboral,
+        cargaFamiliarTotal: objFamiliar.length,
+        experienciaLaboralTotal: objExperienciaLaboral.length,
+        formacionAcademicaTotal: objFormacionAcademica.length,
+        foto: defaultImage,
+        extension: '.png',
+        statusFoto: statusFoto,
+        node: '#formDatosPersonales'
+      }
 
+      if (helpers.calculateAge(helpers.toDate(obj.fechaNacimiento)) < 18) {
+        return obj = {
+          status: false,
+          message: 'Verifique la edad ingresada.'
+        }
+      }
 
+      if (obj.latitudResidencia === '' || obj.longitudResidencia === '') {
+        return obj = {
+          status: false,
+          message: 'Por favor ubique en el mapa su lugar de residencia (dirección referencial) <br/> <span class="text-muted">arrastrar el marcador o dar clic sobre el mapa</span>'
+        }
+      }
+
+      if (!obj.statusFoto) {
+        return obj = {
+          status: false,
+          message: 'Debe cargar una foto, por favor.'
+        }
+      }
+      obj.status = true
       return obj
     }
   },

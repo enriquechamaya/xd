@@ -92,11 +92,7 @@
               </div>
             </div>
             <!--AVISO-->
-            <div class="row">
-              <div class="col-md-12 text-center">
-                <button id="btnPrueba" class="btn btn-primary">REGISTRASH</button>
-              </div>
-            </div>
+            
             <!--DATOS PERSONALES-->
             <div class="row">
               <div class="col-md-12">
