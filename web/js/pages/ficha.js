@@ -6,6 +6,20 @@ let flagExperienciaLaboral = false, flagRegimenPensionario = true, statusFoto = 
 
 const getNode = node => document.querySelector(node)
 const getNodeAll = nodeList => document.querySelectorAll(nodeList)
+const dontLeaveMe = () => {
+  // Get page title
+  const pageTitle = document.querySelector('title').innerText
+
+  // Change page title on blur
+  window.addEventListener('blur', (event) => {
+    document.querySelector('title').innerText = ' ¡Hey! ¡No olvides la ficha!'
+  })
+
+  // Change page title back on focus
+  window.addEventListener('focus', (event) => {
+    document.querySelector('title').innerText = pageTitle
+  })
+}
 const helpers = {
   defaultSelect(el) {
     el.setAttribute('disabled', true)
@@ -638,13 +652,13 @@ const DOMEvents = () => {
               action: function () {
                 httpRequest.registrarFicha(valid)
                   .then((data) => {
-                    console.log(data)
+                    localStorage.clear()
+                    window.location.href = data.page
                   })
                   .catch(err => {
                     console.log(err)
                     unload()
                     errorMessage('Hubo un error al registrar la información, por favor contactarsé con el área de Sistemas')
-
                   })
               }
             },
@@ -835,7 +849,7 @@ const formsValidation = {
           codigoDepartamentoNacimiento: parseInt(getNode('#cboDepartamentoNacimiento').value),
           codigoProvinciaNacimiento: parseInt(getNode('#cboProvinciaNacimiento').value),
           codigoDistritoNacimiento: parseInt(getNode('#cboDistritoNacimiento').value),
-          codigoUbigeoNacimiento: codigoUbigeoNacimiento,
+//          codigoUbigeoNacimiento: codigoUbigeoNacimiento,
           direccionDocumento: getNode('#txtDireccionDocumento').value,
           telefonoFijo: getNode('#txtTelefonoFijo').value,
           telefonoMovil: getNode('#txtTelefonoMovil').value,
@@ -843,7 +857,7 @@ const formsValidation = {
           codigoDepartamentoResidencia: parseInt(getNode('#cboDepartamentoResidencia').value),
           codigoProvinciaResidencia: parseInt(getNode('#cboProvinciaResidencia').value),
           codigoDistritoResidencia: parseInt(getNode('#cboDistritoResidencia').value),
-          codigoUbigeoResidencia: codigoUbigeoResidencia,
+//          codigoUbigeoResidencia: codigoUbigeoResidencia,
           direccionResidencia: getNode('#txtDireccionResidencia').value,
           latitudResidencia: getNode('#latitudResidencia').value,
           longitudResidencia: getNode('#longitudResidencia').value
@@ -1039,20 +1053,83 @@ const getDataFromLocalStorage = {
       getNode('#cboSexo').value = obj.sexo
       getNode('#cboEstadoCivil').value = obj.codigoEstadoCivil
       getNode('#dpFechaNacimiento').value = obj.fechaNacimiento
-      //nacionalidad
-      // departamento nacimiento
-      // provincia nacimiento
-      // distrito nacimiento
+      getNode('#cboNacionalidad').value = obj.codigoNacionalidad
+      if (obj.codigoNacionalidad === 144) {
+        getNode('#cboDepartamentoNacimiento').removeAttribute('disabled')
+        if (obj.codigoDepartamentoNacimiento !== 0) {
+          getNode('#cboDepartamentoNacimiento').value = obj.codigoDepartamentoNacimiento
+          $(getNode('#cboDepartamentoNacimiento')).selectpicker('refresh')
+          httpRequest.datosPersonales.listarProvincia(obj.codigoDepartamentoNacimiento).
+            then(data => {
+              let options = helpers.createSelectOptions(data.data.provincias, 'codigoProvincia', 'nombreProvincia')
+              helpers.filteredSelect(getNode('#cboProvinciaNacimiento'), options)
+              helpers.defaultSelect(getNode('#cboDistritoNacimiento'))
+              return obj.codigoProvinciaNacimiento
+            })
+            .then((codigoProvincia) => {
+              if (codigoProvincia !== 0) {
+                getNode('#cboProvinciaNacimiento').value = codigoProvincia
+                $(getNode('#cboProvinciaNacimiento')).selectpicker('refresh')
+                httpRequest.datosPersonales.listarDistrito(obj.codigoDepartamentoNacimiento, codigoProvincia)
+                  .then((data) => {
+                    let options = helpers.createSelectOptions(data.data.distritos, 'codigoDistrito', 'nombreDistrito')
+                    helpers.filteredSelect(getNode('#cboDistritoNacimiento'), options)
+                    return obj.codigoDistritoNacimiento
+                  })
+                  .then((codigoDistrito) => {
+                    if (codigoDistrito !== 0) {
+                      getNode('#cboDistritoNacimiento').value = codigoDistrito
+                      $(getNode('#cboDistritoNacimiento')).selectpicker('refresh')
+                      httpRequest.datosPersonales.obtenerUbigeo(obj.codigoDepartamentoNacimiento, obj.codigoProvinciaNacimiento, codigoDistrito)
+                        .then((data) => {
+                          codigoUbigeoNacimiento = data.data.getResultedKey
+                        })
+                    }
+                  })
+              }
+            })
+        }
+      }
       getNode('#txtDireccionDocumento').value = obj.direccionDocumento
       getNode('#txtTelefonoFijo').value = obj.telefonoFijo
       getNode('#txtTelefonoMovil').value = obj.telefonoMovil
       getNode('#txtCorreoElectronico').value = obj.correo
-      // departamento residencia
-      // provincia residencia
-      // distrito residencia
+      if (obj.codigoDepartamentoResidencia !== 0) {
+        getNode('#cboDepartamentoResidencia').value = obj.codigoDepartamentoResidencia
+        $(getNode('#cboDepartamentoResidencia')).selectpicker('refresh')
+        httpRequest.datosPersonales.listarProvincia(obj.codigoDepartamentoResidencia).
+          then(data => {
+            let options = helpers.createSelectOptions(data.data.provincias, 'codigoProvincia', 'nombreProvincia')
+            helpers.filteredSelect(getNode('#cboProvinciaResidencia'), options)
+            helpers.defaultSelect(getNode('#cboDistritoResidencia'))
+            return obj.codigoProvinciaResidencia
+          })
+          .then((codigoProvincia) => {
+            if (codigoProvincia !== 0) {
+              getNode('#cboProvinciaResidencia').value = codigoProvincia
+              $(getNode('#cboProvinciaResidencia')).selectpicker('refresh')
+              httpRequest.datosPersonales.listarDistrito(obj.codigoDepartamentoResidencia, codigoProvincia)
+                .then((data) => {
+                  let options = helpers.createSelectOptions(data.data.distritos, 'codigoDistrito', 'nombreDistrito')
+                  helpers.filteredSelect(getNode('#cboDistritoResidencia'), options)
+                  return obj.codigoDistritoResidencia
+                })
+                .then((codigoDistrito) => {
+                  if (codigoDistrito !== 0) {
+                    getNode('#cboDistritoResidencia').value = codigoDistrito
+                    $(getNode('#cboDistritoResidencia')).selectpicker('refresh')
+                    httpRequest.datosPersonales.obtenerUbigeo(obj.codigoDepartamentoResidencia, obj.codigoProvinciaResidencia, codigoDistrito)
+                      .then((data) => {
+                        codigoUbigeoResidencia = data.data.getResultedKey
+                      })
+                  }
+                })
+            }
+          })
+      }
       getNode('#txtDireccionResidencia').value = obj.direccionResidencia
 
-      getNodeAll('#cboSexo, #cboEstadoCivil').forEach((el) => $(el).selectpicker('refresh'))
+      getNodeAll('#cboSexo, #cboEstadoCivil, #cboNacionalidad').forEach((el) => $(el).selectpicker('refresh'))
     }
   },
   datosFamiliares() {
@@ -1681,7 +1758,7 @@ Objetos.init()
 setTimeout(() => {
   getDataFromLocalStorage.init()
 }, 0)
-
+dontLeaveMe()
 /*
  TODO:
  1) ESTILOS DE LA BANDERA AL LISTAR NACIONALIDAD EN FIREFOX
@@ -1689,14 +1766,6 @@ setTimeout(() => {
  3) CUANDO SE SELECCIONA UN DATEPICKER, DEBE BORRAR EL MENSAJE DE ERROR DE "CAMPO REQUERIDO"
  4) CHECKBOX DEBE VALIDAR: SI TRATA DE QUITAR CHECK Y TIENE EXPERIENCIAS REGISTRADAS, NO LE DEBE DEJAR
  5) ESTILO DE VALIDACION DE LA IMAGEN
- 
- 
- 
- 
- 
- 
- 
- 
- 
+ 6) BORRAR Y MEJORAR ESA PROMESAS HELL AL OBTENER LA LOCALIDAD DE NACIMIENTO Y RESIDENCIA DEL LOCALSTORAGE
  
  */
