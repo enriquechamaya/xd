@@ -636,11 +636,16 @@ const DOMEvents = () => {
             Registrar: {
               btnClass: 'btn-success',
               action: function () {
-                httpRequest.registrarFicha()
+                httpRequest.registrarFicha(valid)
                   .then((data) => {
                     console.log(data)
                   })
-                  .catch(err => console.log(err))
+                  .catch(err => {
+                    console.log(err)
+                    unload()
+                    errorMessage('Hubo un error al registrar la información, por favor contactarsé con el área de Sistemas')
+
+                  })
               }
             },
             Cancelar: {
@@ -824,20 +829,20 @@ const formsValidation = {
           apellidoMaterno: getNode('#txtApellidoMaterno').value,
           nombre: getNode('#txtNombre').value,
           sexo: getNode('#cboSexo').value,
-          codigoEstadoCivil: getNode('#cboEstadoCivil').value,
+          codigoEstadoCivil: parseInt(getNode('#cboEstadoCivil').value),
           fechaNacimiento: getNode('#dpFechaNacimiento').value,
-          codigoNacionalidad: getNode('#cboNacionalidad').value,
-          codigoDepartamentoNacimiento: getNode('#cboDepartamentoNacimiento').value,
-          codigoProvinciaNacimiento: getNode('#cboProvinciaNacimiento').value,
-          codigoDistritoNacimiento: getNode('#cboDistritoNacimiento').value,
+          codigoNacionalidad: parseInt(getNode('#cboNacionalidad').value),
+          codigoDepartamentoNacimiento: parseInt(getNode('#cboDepartamentoNacimiento').value),
+          codigoProvinciaNacimiento: parseInt(getNode('#cboProvinciaNacimiento').value),
+          codigoDistritoNacimiento: parseInt(getNode('#cboDistritoNacimiento').value),
           codigoUbigeoNacimiento: codigoUbigeoNacimiento,
           direccionDocumento: getNode('#txtDireccionDocumento').value,
           telefonoFijo: getNode('#txtTelefonoFijo').value,
           telefonoMovil: getNode('#txtTelefonoMovil').value,
           correo: getNode('#txtCorreoElectronico').value,
-          codigoDepartamentoResidencia: getNode('#cboDepartamentoResidencia').value,
-          codigoProvinciaResidencia: getNode('#cboProvinciaResidencia').value,
-          codigoDistritoResidencia: getNode('#cboDistritoResidencia').value,
+          codigoDepartamentoResidencia: parseInt(getNode('#cboDepartamentoResidencia').value),
+          codigoProvinciaResidencia: parseInt(getNode('#cboProvinciaResidencia').value),
+          codigoDistritoResidencia: parseInt(getNode('#cboDistritoResidencia').value),
           codigoUbigeoResidencia: codigoUbigeoResidencia,
           direccionResidencia: getNode('#txtDireccionResidencia').value,
           latitudResidencia: getNode('#latitudResidencia').value,
@@ -1025,7 +1030,30 @@ const getDataFromLocalStorage = {
     this.regimenPensionario()
   },
   datosPersonales() {
+    if (localStorage.getItem('objDatosPersonales')) {
+      let obj = JSON.parse(localStorage.getItem('objDatosPersonales'))
+      getNode('#txtNumeroRUC').value = obj.ruc
+      $('#txtApellidoPaterno').val(obj.apellidoPaterno)
+      $('#txtApellidoMaterno').val(obj.apellidoMaterno)
+      $('#txtNombre').val(obj.nombre)
+      getNode('#cboSexo').value = obj.sexo
+      getNode('#cboEstadoCivil').value = obj.codigoEstadoCivil
+      getNode('#dpFechaNacimiento').value = obj.fechaNacimiento
+      //nacionalidad
+      // departamento nacimiento
+      // provincia nacimiento
+      // distrito nacimiento
+      getNode('#txtDireccionDocumento').value = obj.direccionDocumento
+      getNode('#txtTelefonoFijo').value = obj.telefonoFijo
+      getNode('#txtTelefonoMovil').value = obj.telefonoMovil
+      getNode('#txtCorreoElectronico').value = obj.correo
+      // departamento residencia
+      // provincia residencia
+      // distrito residencia
+      getNode('#txtDireccionResidencia').value = obj.direccionResidencia
 
+      getNodeAll('#cboSexo, #cboEstadoCivil').forEach((el) => $(el).selectpicker('refresh'))
+    }
   },
   datosFamiliares() {
     if (localStorage.getItem('objFamiliar')) {
@@ -1133,32 +1161,44 @@ const Objetos = {
         cargaFamiliarTotal: objFamiliar.length,
         experienciaLaboralTotal: objExperienciaLaboral.length,
         formacionAcademicaTotal: objFormacionAcademica.length,
-        foto: defaultImage,
-        extension: '.png',
-        statusFoto: statusFoto,
-        node: '#formDatosPersonales'
+        statusFoto: statusFoto
       }
 
       if (helpers.calculateAge(helpers.toDate(obj.fechaNacimiento)) < 18) {
         return obj = {
           status: false,
-          message: 'Verifique la edad ingresada.'
+          message: 'Verifique la edad ingresada.',
+          node: '#formDatosPersonales'
         }
       }
 
       if (obj.latitudResidencia === '' || obj.longitudResidencia === '') {
         return obj = {
           status: false,
-          message: 'Por favor ubique en el mapa su lugar de residencia (dirección referencial) <br/> <span class="text-muted">arrastrar el marcador o dar clic sobre el mapa</span>'
+          message: 'Por favor ubique en el mapa su lugar de residencia (dirección referencial) <br/> <span class="text-muted">arrastrar el marcador o dar clic sobre el mapa</span>',
+          node: '#formDatosPersonales'
         }
       }
 
       if (!obj.statusFoto) {
         return obj = {
           status: false,
-          message: 'Debe cargar una foto, por favor.'
+          message: 'Debe cargar una foto, por favor.',
+          node: '#formDatosPersonales'
         }
       }
+
+      if (getNode('div.fileinput-preview').children[0].getAttribute('src') === '') {
+        getNode('div.fileinput-preview').children[0].setAttribute('src', defaultImage)
+        obj.foto = defaultImage
+        obj.extension = '.png'
+      } else {
+        obj.foto = getNode('div.fileinput-preview').children[0].getAttribute('src')
+        let lblFoto = getNode('#lblFoto').value.split('\\')
+        let imgExtension = lblFoto[lblFoto.length - 1].substring(lblFoto[lblFoto.length - 1].indexOf('.'), lblFoto[lblFoto.length - 1].length);
+        obj.extension = imgExtension
+      }
+
       obj.status = true
       return obj
     }
@@ -1648,7 +1688,7 @@ setTimeout(() => {
  2) AL CAMBIAR EL TIPO DE DOCUMENTO DE FAMILIAR, LAS REGLAS DE LOS INPUTS DEBE APLICARSE
  3) CUANDO SE SELECCIONA UN DATEPICKER, DEBE BORRAR EL MENSAJE DE ERROR DE "CAMPO REQUERIDO"
  4) CHECKBOX DEBE VALIDAR: SI TRATA DE QUITAR CHECK Y TIENE EXPERIENCIAS REGISTRADAS, NO LE DEBE DEJAR
- 
+ 5) ESTILO DE VALIDACION DE LA IMAGEN
  
  
  
