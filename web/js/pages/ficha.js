@@ -90,7 +90,7 @@ const helpers = {
     return new Date(parts[2], parts[1] - 1, parts[0]);
   },
   addObjToDataTable(element, obj) {
-    $(getNode(element)).DataTable().row.add(obj).draw()
+    $(getNode(element)).DataTable().row.add(obj, 1).draw()
   },
   getRow(el, row) {
     return $(getNode(el)).DataTable().row($(row).parents('tr'))
@@ -1767,5 +1767,6 @@ dontLeaveMe()
  4) CHECKBOX DEBE VALIDAR: SI TRATA DE QUITAR CHECK Y TIENE EXPERIENCIAS REGISTRADAS, NO LE DEBE DEJAR
  5) ESTILO DE VALIDACION DE LA IMAGEN
  6) BORRAR Y MEJORAR ESA PROMESAS HELL AL OBTENER LA LOCALIDAD DE NACIMIENTO Y RESIDENCIA DEL LOCALSTORAGE
- 
+ 7) CORREGIR LOS LIMITES DE LA FICHA (DE TODOS LOS DATEPICKER)
+ 8) ORDENAR LA DATA DE LAS TABLAS 
  */

@@ -92,7 +92,7 @@
               </div>
             </div>
             <!--AVISO-->
-            
+
             <!--DATOS PERSONALES-->
             <div class="row">
               <div class="col-md-12">
@@ -418,7 +418,7 @@
                           </div>
                           <div class="row">
                             <div class="col-md-12 text-center">
-                              <button type="button" id="btnAgregarFamiliar" class="btn btn-success ">
+                              <button type="button" id="btnAgregarFamiliar" class="btn btn-success tp-animation-button">
                                 <i class="icon-checkmark position-left"></i> Agregar
                               </button>
                             </div>
@@ -538,7 +538,7 @@
                           <!--accion agregar-->
                           <div class="row">
                             <div class="col-md-12 text-center">
-                              <button type="button" id="btnAgregarFormacionAcademica" class="btn btn-success ">
+                              <button type="button" id="btnAgregarFormacionAcademica" class="btn btn-success tp-animation-button">
                                 <i class="icon-checkmark position-left"></i> Agregar
                               </button>
                             </div>
@@ -640,7 +640,7 @@
                           </div>
                           <div class="row">
                             <div class="col-md-12 text-center">
-                              <button type="button" id="btnAgregarExperienciaLaboral" class="btn btn-success ">
+                              <button type="button" id="btnAgregarExperienciaLaboral" class="btn btn-success tp-animation-button">
                                 <i class="icon-checkmark position-left"></i> Agregar
                               </button>
                             </div>
@@ -719,7 +719,7 @@
 
             <div class="row">
               <div class="col-md-12 text-center">
-                <button type="button" id="btnRegistrarFicha" class="btn btn-success btn-xlg text-uppercase text-semibold" style="width: 250px">
+                <button type="button" id="btnRegistrarFicha" class="btn btn-success btn-xlg text-uppercase text-semibold tp-animation-button" style="width: 250px">
                   <i class="icon-file-check position-left" style="font-size: 20px;"></i> Registrar ficha
                 </button>
               </div>

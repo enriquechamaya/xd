@@ -10,12 +10,19 @@ let map, myLatLng, infowindow;
 function initMap() {
   if (localStorage.getItem('objDatosPersonales')) {
     let obj = JSON.parse(localStorage.getItem('objDatosPersonales'))
-    myLatLng = {
-      lat: parseFloat(obj.latitudResidencia),
-      lng: parseFloat(obj.longitudResidencia)
-    };
-    $('#latitudResidencia').val(obj.latitudResidencia);
-    $('#longitudResidencia').val(obj.longitudResidencia);
+    if (obj.latitudResidencia !== '' && obj.longitudResidencia !== '') {
+      myLatLng = {
+        lat: parseFloat(obj.latitudResidencia),
+        lng: parseFloat(obj.longitudResidencia)
+      };
+      $('#latitudResidencia').val(obj.latitudResidencia);
+      $('#longitudResidencia').val(obj.longitudResidencia);
+    } else {
+      myLatLng = {
+        lat: -12.0262676,
+        lng: -77.1278633
+      };
+    }
   } else {
     myLatLng = {
       lat: -12.0262676,

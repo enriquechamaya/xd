@@ -45,30 +45,6 @@
 .validation-error-label, .validation-valid-label{
   display: inline-block;
 }
-/*
-.div-chk-experiencia-laboral{
-  display: flex;
-  justify-content: space-around;
-  flex-direction: row-reverse;
-}
-
-#textChkExperienciaLaboral{
-  position: relative;
-  top: 8px;
-  right: 8px;
-}
-
-.div-chk-fondo-pension{
-  display: flex;
-  justify-content: space-around;
-  flex-direction: row-reverse;
-}
-
-#textChkFondoPension{
-  position: relative;
-  top: 8px;
-  right: 8px;
-}*/
 
 .tp-fix-switch{
   display: flex;
@@ -76,4 +52,18 @@
   align-content: center;
   margin-top: 9px;
 }
+
+.tp-animation-button{
+  transform: scale(1);
+  transition: all ease-in-out 0.15s;
+}
+
+.tp-animation-button:hover{
+  transform: scale(1.04)
+}
+
+.tp-animation-button:active{
+  transform: scale(0.96);
+}
+
 
